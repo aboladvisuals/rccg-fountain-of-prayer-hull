@@ -19,7 +19,7 @@ export default async function AttendanceHistoryPage() {
       title: string;
       service_date: string;
       starts_at: string | null;
-    } | null;
+    }[];
   }[] = [];
 
   if (organisation) {
@@ -74,7 +74,7 @@ export default async function AttendanceHistoryPage() {
           ) : (
             <div className="space-y-4">
               {rows.map((row) => {
-                const service = row.services;
+                const service = row.services?.[0] ?? null;
 
                 return (
                   <article
@@ -126,3 +126,4 @@ export default async function AttendanceHistoryPage() {
     </main>
   );
 }
+

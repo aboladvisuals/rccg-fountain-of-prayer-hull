@@ -237,6 +237,18 @@ export default async function PastorDashboardPage() {
           </Link>
 
           <Link
+            href="/pastor/services"
+            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+          >
+            <p className="text-sm text-slate-500">
+              Service management
+            </p>
+            <h2 className="mt-2 text-lg font-semibold">
+              Church services →
+            </h2>
+          </Link>
+
+          <Link
             href="/pastor/announcements"
             className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
           >
@@ -278,4 +290,5 @@ export default async function PastorDashboardPage() {
     </main>
   );
 }
+
 

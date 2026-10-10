@@ -47,7 +47,7 @@ export default async function DisplayPage() {
   }
 
   const today = localDate(new Date(), location.timezone);
-  const [year, month, day] = today.split("-").map(Number);
+  const [, month, day] = today.split("-").map(Number);
 
   const { data: service } = await supabase
     .from("services")
@@ -217,3 +217,4 @@ export default async function DisplayPage() {
     />
   );
 }
+
