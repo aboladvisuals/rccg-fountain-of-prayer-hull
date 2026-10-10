@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireMemberSession } from "@/lib/member/session";
+import { localDate } from "@/lib/member/dashboard";
 
 async function getFamilyContext() {
   const { supabase, user } = await requireMemberSession();
@@ -35,6 +36,34 @@ async function getFamilyContext() {
   };
 }
 
+async function getAccessibleFamily(
+  supabase: Awaited<ReturnType<typeof getFamilyContext>>["supabase"],
+  userId: string,
+  organisationId: string
+) {
+  const { data: guardianLink } = await supabase
+    .from("family_guardians")
+    .select("family_id")
+    .eq("organisation_id", organisationId)
+    .eq("profile_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  if (guardianLink) {
+    return { id: guardianLink.family_id };
+  }
+
+  const { data: ownedFamily } = await supabase
+    .from("families")
+    .select("id")
+    .eq("organisation_id", organisationId)
+    .eq("primary_profile_id", userId)
+    .limit(1)
+    .maybeSingle();
+
+  return ownedFamily;
+}
+
 export async function addFamilyMember(formData: FormData) {
   try {
     const { supabase, user, organisationId } =
@@ -53,12 +82,11 @@ export async function addFamilyMember(formData: FormData) {
       };
     }
 
-    let { data: family } = await supabase
-      .from("families")
-      .select("id")
-      .eq("organisation_id", organisationId)
-      .eq("primary_profile_id", user.id)
-      .maybeSingle();
+    let family = await getAccessibleFamily(
+      supabase,
+      user.id,
+      organisationId
+    );
 
     if (!family) {
       const { data: profile } = await supabase
@@ -82,11 +110,22 @@ export async function addFamilyMember(formData: FormData) {
         .select("id")
         .single();
 
-      if (result.error) {
-        throw result.error;
-      }
+      if (result.error) throw result.error;
 
       family = result.data;
+
+      const { error: guardianError } = await supabase
+        .from("family_guardians")
+        .insert({
+          organisation_id: organisationId,
+          family_id: family.id,
+          profile_id: user.id,
+          relationship: "Primary account holder",
+        });
+
+      if (guardianError && guardianError.code !== "23505") {
+        throw guardianError;
+      }
     }
 
     const { error } = await supabase
@@ -100,9 +139,7 @@ export async function addFamilyMember(formData: FormData) {
         show_name_on_display: true,
       });
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     revalidatePath("/member/family");
     revalidatePath("/member");
@@ -127,12 +164,11 @@ export async function removeFamilyMember(memberId: string) {
     const { supabase, user, organisationId } =
       await getFamilyContext();
 
-    const { data: family } = await supabase
-      .from("families")
-      .select("id")
-      .eq("organisation_id", organisationId)
-      .eq("primary_profile_id", user.id)
-      .maybeSingle();
+    const family = await getAccessibleFamily(
+      supabase,
+      user.id,
+      organisationId
+    );
 
     if (!family) {
       throw new Error("Family record could not be found.");
@@ -144,9 +180,7 @@ export async function removeFamilyMember(memberId: string) {
       .eq("id", memberId)
       .eq("family_id", family.id);
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     revalidatePath("/member/family");
 
@@ -173,12 +207,11 @@ export async function checkInFamilyMember(
     const { supabase, user, organisationId } =
       await getFamilyContext();
 
-    const { data: family } = await supabase
-      .from("families")
-      .select("id")
-      .eq("organisation_id", organisationId)
-      .eq("primary_profile_id", user.id)
-      .maybeSingle();
+    const family = await getAccessibleFamily(
+      supabase,
+      user.id,
+      organisationId
+    );
 
     if (!family) {
       throw new Error("Family record could not be found.");
@@ -195,11 +228,27 @@ export async function checkInFamilyMember(
       throw new Error("Family member could not be found.");
     }
 
+    const { data: location } = await supabase
+      .from("church_locations")
+      .select("id, timezone")
+      .eq("organisation_id", organisationId)
+      .eq("slug", "hull")
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (!location) {
+      throw new Error("Hull location could not be found.");
+    }
+
+    const today = localDate(new Date(), location.timezone);
+
     const { data: service } = await supabase
       .from("services")
       .select("id")
       .eq("id", serviceId)
       .eq("organisation_id", organisationId)
+      .eq("location_id", location.id)
+      .eq("service_date", today)
       .eq("status", "live")
       .maybeSingle();
 
@@ -216,6 +265,7 @@ export async function checkInFamilyMember(
 
     if (existing) {
       revalidatePath("/member/family");
+
       return {
         ok: true,
         message: `${member.first_name} is already checked in.`,
@@ -223,7 +273,9 @@ export async function checkInFamilyMember(
     }
 
     const displayName = member.show_name_on_display
-      ? [member.first_name, member.last_name].filter(Boolean).join(" ")
+      ? [member.first_name, member.last_name]
+          .filter(Boolean)
+          .join(" ")
       : null;
 
     const { error } = await supabase
@@ -242,10 +294,15 @@ export async function checkInFamilyMember(
 
     revalidatePath("/member/family");
     revalidatePath("/member");
+    revalidatePath("/pastor/presence");
+    revalidatePath("/display");
 
     return {
       ok: true,
-      message: `${member.first_name} is checked in.`,
+      message:
+        error?.code === "23505"
+          ? `${member.first_name} is already checked in.`
+          : `${member.first_name} is checked in.`,
     };
   } catch (error) {
     return {
@@ -278,12 +335,11 @@ export async function addFamilyGuardian(formData: FormData) {
       };
     }
 
-    const { data: family } = await supabase
-      .from("families")
-      .select("id")
-      .eq("organisation_id", organisationId)
-      .eq("primary_profile_id", user.id)
-      .maybeSingle();
+    const family = await getAccessibleFamily(
+      supabase,
+      user.id,
+      organisationId
+    );
 
     if (!family) {
       throw new Error(
