@@ -1,68 +1,78 @@
 "use client";
-
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-
+import { usePathname } from "next/navigation";
+import s from "@/components/public/public.module.css";
+const links = [
+  ["About", "/about"],
+  ["Services", "/services"],
+  ["Ministries", "/ministries"],
+  ["Events", "/events"],
+  ["Contact", "/contact"],
+];
 export default function Header() {
   const [open, setOpen] = useState(false);
-
+  const toggle = useRef<HTMLButtonElement>(null);
+  const pathname = usePathname();
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 lg:px-10">
-        <Link href="/" className="leading-tight">
-          <span className="block text-xs font-bold uppercase tracking-[0.2em] text-purple-700">
-            RCCG
+    <header
+      className={s.header}
+      onKeyDown={(event) => {
+        if (event.key === "Escape" && open) {
+          setOpen(false);
+          toggle.current?.focus();
+        }
+      }}
+    >
+      <div className={s.headerInner}>
+        <Link
+          href="/"
+          className={s.brand}
+          onClick={() => setOpen(false)}
+          aria-label="Fountain of Prayer Hull home"
+        >
+          <span className={s.brandMark} aria-hidden="true">
+            ✦
           </span>
-          <span className="text-lg font-bold text-slate-900">
-            Fountain of Prayer Hull
+          <span>
+            <span className={s.brandName}>Fountain of Prayer</span>
+            <span className={s.brandSub}>RCCG · HULL</span>
           </span>
         </Link>
-
-        <nav className="hidden items-center gap-7 text-sm font-medium text-slate-700 md:flex">
-          <Link href="/#about">About</Link>
-          <Link href="/#services">Services</Link>
-          <Link href="/#events">Events</Link>
-          <Link href="/#ministries">Ministries</Link>
-          <Link href="/#contact">Contact</Link>
-
+        <button
+          ref={toggle}
+          className={s.menuToggle}
+          type="button"
+          aria-controls="public-navigation"
+          aria-expanded={open}
+          onClick={() => setOpen(!open)}
+        >
+          {open ? "Close −" : "Menu +"}
+        </button>
+        <nav
+          id="public-navigation"
+          aria-label="Main navigation"
+          className={[s.nav, open ? s.navOpen : ""].join(" ")}
+        >
+          {links.map(([label, href]) => (
+            <Link
+              key={href}
+              href={href}
+              aria-current={pathname === href ? "page" : undefined}
+              onClick={() => setOpen(false)}
+            >
+              {label}
+            </Link>
+          ))}
           <Link
             href="/login"
-            className="rounded-lg bg-purple-700 px-4 py-2 text-white"
+            className={s.loginLink}
+            onClick={() => setOpen(false)}
           >
-            Member Login
+            Member login <span aria-hidden="true">↗</span>
           </Link>
         </nav>
-
-        <button
-          type="button"
-          onClick={() => setOpen(!open)}
-          className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold md:hidden"
-          aria-expanded={open}
-          aria-label="Toggle navigation"
-        >
-          {open ? "Close" : "Menu"}
-        </button>
       </div>
-
-      {open && (
-        <nav className="border-t border-slate-200 px-6 py-4 md:hidden">
-          <div className="flex flex-col gap-4 font-medium text-slate-700">
-            <Link href="/#about" onClick={() => setOpen(false)}>About</Link>
-            <Link href="/#services" onClick={() => setOpen(false)}>Services</Link>
-            <Link href="/#events" onClick={() => setOpen(false)}>Events</Link>
-            <Link href="/#ministries" onClick={() => setOpen(false)}>Ministries</Link>
-            <Link href="/#contact" onClick={() => setOpen(false)}>Contact</Link>
-
-            <Link
-              href="/login"
-              onClick={() => setOpen(false)}
-              className="rounded-lg bg-purple-700 px-4 py-3 text-center text-white"
-            >
-              Member Login
-            </Link>
-          </div>
-        </nav>
-      )}
     </header>
   );
 }
