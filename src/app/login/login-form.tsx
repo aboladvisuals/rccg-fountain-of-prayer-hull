@@ -242,6 +242,14 @@ export default function LoginForm({
                 ? "Signing in..."
                 : "Sign in with password"}
             </button>
+            <div className="text-right">
+  <Link
+    href="/forgot-password"
+    className="text-sm font-medium text-purple-700 hover:text-purple-800"
+  >
+    Forgot password?
+  </Link>
+</div>
           </form>
 
           {passwordMessage && (
