@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin/session";
+import UserAccessForm from "./user-access-form";
 
 type ProfileRow = {
   id: string;
@@ -16,7 +17,8 @@ type MembershipRow = {
 };
 
 export default async function AdminUsersPage() {
-  const { supabase, organisation } = await requireAdminSession();
+  const { supabase, organisation, user } =
+    await requireAdminSession();
 
   const { data, error } = await supabase
     .from("organisation_memberships")
@@ -68,79 +70,117 @@ export default async function AdminUsersPage() {
           </h1>
 
           <p className="mt-3 max-w-3xl text-purple-100">
-            Review church users, membership status and assigned access roles.
-            Role editing controls will be added after the secure mutation layer
-            and audit protection are in place.
+            Assign church access roles and activate or deactivate
+            organisation membership.
           </p>
+
+          <div className="mt-6 rounded-2xl border border-purple-700 bg-purple-900/50 p-4 text-sm leading-6 text-purple-100">
+            <strong className="text-white">Access levels:</strong>{" "}
+            Member has normal church access. Pastor receives pastoral
+            operations access. Media receives presentation access. Admin
+            receives administrative access, including user management.
+          </div>
         </section>
 
         <section className="mt-8">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h2 className="text-xl font-bold">Organisation users</h2>
+
               <p className="mt-1 text-sm text-slate-500">
                 {memberships.length} user
                 {memberships.length === 1 ? "" : "s"}
               </p>
             </div>
+
+            <div className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+              Changes are audit logged
+            </div>
           </div>
 
-          <div className="mt-4 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="mt-4 space-y-4">
             {memberships.length === 0 ? (
-              <div className="p-6">
+              <div className="rounded-2xl border border-slate-200 bg-white p-6">
                 <p className="font-semibold">No users found</p>
               </div>
             ) : (
-              <div className="divide-y divide-slate-200">
-                {memberships.map((membership) => {
-                  const profile = Array.isArray(membership.profile)
-                    ? membership.profile[0] ?? null
-                    : membership.profile;
+              memberships.map((membership) => {
+                const profile = Array.isArray(membership.profile)
+                  ? membership.profile[0] ?? null
+                  : membership.profile;
 
-                  const name =
-                    profile?.full_name?.trim() ||
-                    profile?.first_name?.trim() ||
-                    profile?.email ||
-                    "Unnamed user";
+                const name =
+                  profile?.full_name?.trim() ||
+                  profile?.first_name?.trim() ||
+                  profile?.email ||
+                  "Unnamed user";
 
-                  return (
-                    <article
-                      key={membership.id}
-                      className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6"
-                    >
+                const isCurrentUser = profile?.id === user.id;
+
+                return (
+                  <article
+                    key={membership.id}
+                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+                  >
+                    <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">
-                        <h3 className="truncate font-semibold text-slate-950">
-                          {name}
-                        </h3>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="truncate text-lg font-semibold text-slate-950">
+                            {name}
+                          </h3>
+
+                          {isCurrentUser && (
+                            <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                              You
+                            </span>
+                          )}
+                        </div>
 
                         {profile?.email && (
                           <p className="mt-1 truncate text-sm text-slate-500">
                             {profile.email}
                           </p>
                         )}
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold capitalize text-purple-800">
+                            {membership.role}
+                          </span>
+
+                          <span
+                            className={
+                              membership.status === "active"
+                                ? "rounded-full bg-green-50 px-3 py-1 text-xs font-semibold capitalize text-green-800"
+                                : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize text-slate-600"
+                            }
+                          >
+                            {membership.status}
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded-full bg-purple-50 px-3 py-1 text-xs font-semibold capitalize text-purple-800">
-                          {membership.role}
-                        </span>
-
-                        <span
-                          className={
-                            membership.status === "active"
-                              ? "rounded-full bg-green-50 px-3 py-1 text-xs font-semibold capitalize text-green-800"
-                              : "rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold capitalize text-slate-600"
-                          }
-                        >
-                          {membership.status}
-                        </span>
+                      <div className="w-full lg:max-w-xl">
+                        <UserAccessForm
+                          membershipId={membership.id}
+                          initialRole={membership.role}
+                          initialStatus={membership.status}
+                          userName={name}
+                          isCurrentUser={isCurrentUser}
+                        />
                       </div>
-                    </article>
-                  );
-                })}
-              </div>
+                    </div>
+                  </article>
+                );
+              })
             )}
           </div>
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900">
+          <strong>Administrator protection:</strong> the database prevents
+          the final active administrator from being demoted, deactivated
+          or deleted. Every role/status change is recorded in the membership
+          audit log.
         </section>
       </div>
     </main>
