@@ -1,3 +1,4 @@
+import LivePreview from "./live-preview";
 import Link from "next/link";
 import { requireMediaSession } from "@/lib/media/session";
 import {
@@ -169,7 +170,9 @@ export default async function MediaDashboardPage() {
             <div>
               <p className="text-sm text-slate-500">
                 Current presentation mode
+                
               </p>
+              <LivePreview />
 
               <h2 className="mt-1 text-xl font-semibold capitalize">
                 {presentationState?.mode ?? "Unavailable"}
