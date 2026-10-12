@@ -5,6 +5,7 @@ import {
   setPresentationMode,
   showManualSlide,
 } from "./actions";
+import BirthdayPanel from "./birthday-panel";
 import LivePreview from "./live-preview";
 import ShowOnScreenButton from "./show-on-screen-button";
 
@@ -41,6 +42,55 @@ export default async function MediaDashboardPage() {
         .eq("location_id", location.id)
         .maybeSingle()
     : { data: null };
+
+  let birthdayNames: string[] = [];
+
+  if (location) {
+    const today = localDate(
+      new Date(),
+      location.timezone
+    );
+
+    const [, month, day] = today
+      .split("-")
+      .map(Number);
+
+    const [{ data: profiles }, { data: familyMembers }] =
+      await Promise.all([
+        supabase
+          .from("profiles")
+          .select("full_name, first_name")
+          .eq("birth_month", month)
+          .eq("birth_day", day)
+          .eq("show_name_on_display", true),
+
+        supabase
+          .from("family_members")
+          .select("first_name, last_name")
+          .eq("organisation_id", organisation.id)
+          .eq("birth_month", month)
+          .eq("birth_day", day)
+          .eq("show_name_on_display", true),
+      ]);
+
+    birthdayNames = [
+      ...(profiles ?? []).map(
+        (profile) =>
+          profile.full_name?.trim() ||
+          profile.first_name?.trim()
+      ),
+
+      ...(familyMembers ?? []).map(
+        (member) =>
+          [member.first_name, member.last_name]
+            .filter(Boolean)
+            .join(" ")
+      ),
+    ].filter(
+      (name): name is string =>
+        Boolean(name)
+    );
+  }
 
   const { data: presentationFeed } = await supabase
     .from("presentation_public_feed")
@@ -435,6 +485,8 @@ export default async function MediaDashboardPage() {
             </div>
           )}
         </section>
+
+        <BirthdayPanel names={birthdayNames} />
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2">
           <form
