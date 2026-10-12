@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
 import { createClient } from "@/lib/supabase/client";
 
 export type DisplaySlide =
@@ -64,6 +65,11 @@ type PresentationStateRow = {
   updated_at: string;
 };
 
+type AutoCommand = {
+  action: "next" | "previous";
+  id: string;
+};
+
 function toPresentationState(
   row: PresentationStateRow
 ): PresentationState {
@@ -77,6 +83,26 @@ function toPresentationState(
         ? row.payload
         : {},
     updatedAt: row.updated_at,
+  };
+}
+
+function getAutoCommand(
+  payload: Record<string, unknown>
+): AutoCommand | null {
+  const action = payload.auto_command;
+  const id = payload.auto_command_id;
+
+  if (
+    (action !== "next" && action !== "previous") ||
+    typeof id !== "string" ||
+    id.length === 0
+  ) {
+    return null;
+  }
+
+  return {
+    action,
+    id,
   };
 }
 
@@ -159,6 +185,12 @@ export default function RotatingDisplay({
   const [presentationState, setPresentationState] =
     useState<PresentationState | null>(initialPresentationState);
 
+  const lastAutoCommandId = useRef<string | null>(
+    initialPresentationState
+      ? getAutoCommand(initialPresentationState.payload)?.id ?? null
+      : null
+  );
+
   const activeSlide = useMemo(() => {
     if (presentationState?.mode === "blank") {
       return null;
@@ -170,6 +202,40 @@ export default function RotatingDisplay({
 
     return slides[index] ?? null;
   }, [presentationState, slides, index]);
+
+  const applyPresentationState = useCallback(
+    (nextState: PresentationState) => {
+      setPresentationState((currentState) => {
+        if (nextState.mode === "auto") {
+          const command = getAutoCommand(nextState.payload);
+
+          if (
+            command &&
+            command.id !== lastAutoCommandId.current &&
+            slides.length > 0
+          ) {
+            lastAutoCommandId.current = command.id;
+
+            setIndex((currentIndex) => {
+              if (command.action === "next") {
+                return (currentIndex + 1) % slides.length;
+              }
+
+              return (
+                (currentIndex - 1 + slides.length) %
+                slides.length
+              );
+            });
+          } else if (currentState?.mode !== "auto") {
+            setIndex(0);
+          }
+        }
+
+        return nextState;
+      });
+    },
+    [slides.length]
+  );
 
   useEffect(() => {
     if (presentationState?.mode !== "auto") {
@@ -194,6 +260,25 @@ export default function RotatingDisplay({
 
     const supabase = createClient();
 
+    async function syncPresentationState() {
+      const { data, error } = await supabase
+        .from("presentation_state")
+        .select(
+          "mode, slide_type, title, content, payload, updated_at"
+        )
+        .eq("organisation_id", organisationId)
+        .eq("location_id", locationId)
+        .maybeSingle();
+
+      if (error || !data) {
+        return;
+      }
+
+      applyPresentationState(
+        toPresentationState(data as PresentationStateRow)
+      );
+    }
+
     const channel = supabase
       .channel(`presentation-state:${locationId}`)
       .on(
@@ -211,29 +296,51 @@ export default function RotatingDisplay({
 
           const row = payload.new as PresentationStateRow;
 
-          setPresentationState(toPresentationState(row));
-
-          if (row.mode === "auto") {
-            setIndex(0);
-          }
+          applyPresentationState(toPresentationState(row));
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === "SUBSCRIBED") {
+          void syncPresentationState();
+        }
+      });
 
-    return () => {
-      void supabase.removeChannel(channel);
-    };
-  }, [organisationId, locationId]);
-
-  useEffect(() => {
-    const refresh = window.setInterval(() => {
-      if (presentationState?.mode === "auto") {
-        window.location.reload();
-      }
+    const resyncTimer = window.setInterval(() => {
+      void syncPresentationState();
     }, 60000);
 
-    return () => window.clearInterval(refresh);
-  }, [presentationState?.mode]);
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        void syncPresentationState();
+      }
+    }
+
+    function handleOnline() {
+      void syncPresentationState();
+    }
+
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange
+    );
+    window.addEventListener("online", handleOnline);
+
+    return () => {
+      window.clearInterval(resyncTimer);
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange
+      );
+      window.removeEventListener("online", handleOnline);
+
+      void supabase.removeChannel(channel);
+    };
+  }, [
+    organisationId,
+    locationId,
+    applyPresentationState,
+  ]);
 
   if (presentationState?.mode === "blank") {
     return <main className="min-h-screen bg-black" />;

@@ -1,7 +1,10 @@
 import Link from "next/link";
+
 import { localDate } from "@/lib/member/dashboard";
 import { requireMediaSession } from "@/lib/media/session";
+
 import {
+  navigateAutomaticSlides,
   setPresentationMode,
   showManualSlide,
 } from "./actions";
@@ -266,6 +269,18 @@ export default async function MediaDashboardPage() {
     await setPresentationMode("auto");
   }
 
+  async function showPreviousSlide() {
+    "use server";
+
+    await navigateAutomaticSlides("previous");
+  }
+
+  async function showNextSlide() {
+    "use server";
+
+    await navigateAutomaticSlides("next");
+  }
+
   async function clearDisplay() {
     "use server";
 
@@ -378,6 +393,50 @@ export default async function MediaDashboardPage() {
               </span>
             </button>
           </form>
+        </section>
+
+        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+                Automatic presentation
+              </p>
+
+              <h2 className="mt-2 text-xl font-bold">
+                Slide navigation
+              </h2>
+
+              <p className="mt-2 text-sm text-slate-600">
+                Move through the automatic presentation without interrupting the live display.
+              </p>
+            </div>
+
+            <div className="flex w-full gap-3 sm:w-auto">
+              <form
+                action={showPreviousSlide}
+                className="flex-1 sm:flex-none"
+              >
+                <button
+                  type="submit"
+                  className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-800 transition hover:border-purple-400 hover:bg-purple-50"
+                >
+                  ← Previous
+                </button>
+              </form>
+
+              <form
+                action={showNextSlide}
+                className="flex-1 sm:flex-none"
+              >
+                <button
+                  type="submit"
+                  className="w-full rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+                >
+                  Next →
+                </button>
+              </form>
+            </div>
+          </div>
         </section>
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
@@ -682,33 +741,35 @@ export default async function MediaDashboardPage() {
           )}
         </section>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link
-            href="/pastor/announcements"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Presentation content
-            </p>
+        {(role === "admin" || role === "pastor") && (
+          <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              href="/pastor/announcements"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Presentation content
+              </p>
 
-            <h2 className="mt-2 text-lg font-semibold">
-              Announcements →
-            </h2>
-          </Link>
+              <h2 className="mt-2 text-lg font-semibold">
+                Announcements →
+              </h2>
+            </Link>
 
-          <Link
-            href="/pastor/display-settings"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Display behaviour
-            </p>
+            <Link
+              href="/pastor/display-settings"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Display behaviour
+              </p>
 
-            <h2 className="mt-2 text-lg font-semibold">
-              Display settings →
-            </h2>
-          </Link>
-        </section>
+              <h2 className="mt-2 text-lg font-semibold">
+                Display settings →
+              </h2>
+            </Link>
+          </section>
+        )}
       </div>
     </main>
   );
