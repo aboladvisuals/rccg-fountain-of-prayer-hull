@@ -39,6 +39,18 @@ export default async function MediaDashboardPage() {
         .maybeSingle()
     : { data: null };
 
+  const { data: publicTestimonies } = await supabase
+    .from("presentation_public_feed")
+    .select(`
+      content_id,
+      title,
+      content,
+      published_at
+    `)
+    .eq("organisation_id", organisation.id)
+    .eq("content_type", "testimony")
+    .order("published_at", { ascending: false });
+
   async function showWelcome() {
     "use server";
 
@@ -91,6 +103,28 @@ export default async function MediaDashboardPage() {
       slideType: "lyrics",
       title: songTitle,
       content: lyrics,
+    });
+  }
+
+  async function showTestimony(formData: FormData) {
+    "use server";
+
+    const title = String(
+      formData.get("title") ?? ""
+    ).trim();
+
+    const content = String(
+      formData.get("content") ?? ""
+    ).trim();
+
+    if (!content) {
+      return;
+    }
+
+    await showManualSlide({
+      slideType: "testimony",
+      title: title || "Testimony",
+      content,
     });
   }
 
@@ -312,6 +346,70 @@ export default async function MediaDashboardPage() {
               Show lyrics on screen
             </button>
           </form>
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Presentation-safe content
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Public testimonies
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-600">
+              Only testimonies already approved and published by the pastoral team appear here.
+            </p>
+          </div>
+
+          {!publicTestimonies ||
+          publicTestimonies.length === 0 ? (
+            <div className="mt-5 rounded-xl bg-slate-50 p-5 text-sm text-slate-600">
+              No approved public testimonies are available.
+            </div>
+          ) : (
+            <div className="mt-5 space-y-4">
+              {publicTestimonies.map((testimony) => (
+                <article
+                  key={testimony.content_id}
+                  className="rounded-2xl border border-slate-200 p-5"
+                >
+                  <h3 className="text-lg font-semibold">
+                    {testimony.title || "Testimony"}
+                  </h3>
+
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                    {testimony.content}
+                  </p>
+
+                  <form
+                    action={showTestimony}
+                    className="mt-4"
+                  >
+                    <input
+                      type="hidden"
+                      name="title"
+                      value={testimony.title || "Testimony"}
+                    />
+
+                    <input
+                      type="hidden"
+                      name="content"
+                      value={testimony.content}
+                    />
+
+                    <button
+                      type="submit"
+                      className="rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+                    >
+                      Show on Screen
+                    </button>
+                  </form>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
 
         <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
