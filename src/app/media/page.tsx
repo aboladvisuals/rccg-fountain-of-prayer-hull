@@ -4,6 +4,7 @@ import {
   setPresentationMode,
   showManualSlide,
 } from "./actions";
+import ShowOnScreenButton from "./show-on-screen-button";
 
 export default async function MediaDashboardPage() {
   const { supabase, organisation, role } =
@@ -39,17 +40,32 @@ export default async function MediaDashboardPage() {
         .maybeSingle()
     : { data: null };
 
-  const { data: publicTestimonies } = await supabase
+  const { data: presentationFeed } = await supabase
     .from("presentation_public_feed")
     .select(`
+      content_type,
       content_id,
       title,
       content,
       published_at
     `)
     .eq("organisation_id", organisation.id)
-    .eq("content_type", "testimony")
+    .or(
+      location
+        ? `location_id.eq.${location.id},location_id.is.null`
+        : "location_id.is.null"
+    )
     .order("published_at", { ascending: false });
+
+  const publicTestimonies =
+    presentationFeed?.filter(
+      (item) => item.content_type === "testimony"
+    ) ?? [];
+
+  const activeAnnouncements =
+    presentationFeed?.filter(
+      (item) => item.content_type === "announcement"
+    ) ?? [];
 
   async function showWelcome() {
     "use server";
@@ -103,28 +119,6 @@ export default async function MediaDashboardPage() {
       slideType: "lyrics",
       title: songTitle,
       content: lyrics,
-    });
-  }
-
-  async function showTestimony(formData: FormData) {
-    "use server";
-
-    const title = String(
-      formData.get("title") ?? ""
-    ).trim();
-
-    const content = String(
-      formData.get("content") ?? ""
-    ).trim();
-
-    if (!content) {
-      return;
-    }
-
-    await showManualSlide({
-      slideType: "testimony",
-      title: title || "Testimony",
-      content,
     });
   }
 
@@ -355,6 +349,53 @@ export default async function MediaDashboardPage() {
             </p>
 
             <h2 className="mt-2 text-xl font-bold">
+              Active announcements
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-600">
+              Only announcements currently active for the presentation feed appear here.
+            </p>
+          </div>
+
+          {activeAnnouncements.length === 0 ? (
+            <div className="mt-5 rounded-xl bg-slate-50 p-5 text-sm text-slate-600">
+              No active announcements are available.
+            </div>
+          ) : (
+            <div className="mt-5 space-y-4">
+              {activeAnnouncements.map((announcement) => (
+                <article
+                  key={announcement.content_id}
+                  className="rounded-2xl border border-slate-200 p-5"
+                >
+                  <h3 className="text-lg font-semibold">
+                    {announcement.title || "Announcement"}
+                  </h3>
+
+                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-slate-700">
+                    {announcement.content}
+                  </p>
+
+                  <ShowOnScreenButton
+                    slideType="announcement"
+                    title={
+                      announcement.title || "Announcement"
+                    }
+                    content={announcement.content}
+                  />
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Presentation-safe content
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
               Public testimonies
             </h2>
 
@@ -363,8 +404,7 @@ export default async function MediaDashboardPage() {
             </p>
           </div>
 
-          {!publicTestimonies ||
-          publicTestimonies.length === 0 ? (
+          {publicTestimonies.length === 0 ? (
             <div className="mt-5 rounded-xl bg-slate-50 p-5 text-sm text-slate-600">
               No approved public testimonies are available.
             </div>
@@ -383,29 +423,11 @@ export default async function MediaDashboardPage() {
                     {testimony.content}
                   </p>
 
-                  <form
-                    action={showTestimony}
-                    className="mt-4"
-                  >
-                    <input
-                      type="hidden"
-                      name="title"
-                      value={testimony.title || "Testimony"}
-                    />
-
-                    <input
-                      type="hidden"
-                      name="content"
-                      value={testimony.content}
-                    />
-
-                    <button
-                      type="submit"
-                      className="rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
-                    >
-                      Show on Screen
-                    </button>
-                  </form>
+                  <ShowOnScreenButton
+                    slideType="testimony"
+                    title={testimony.title || "Testimony"}
+                    content={testimony.content}
+                  />
                 </article>
               ))}
             </div>
