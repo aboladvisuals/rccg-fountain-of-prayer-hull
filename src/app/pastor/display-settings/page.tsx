@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { requireStaffSession } from "@/lib/staff/session";
+import { requireMediaSession } from "@/lib/media/session";
 import DisplaySettingsForm from "./display-settings-form";
 
 export default async function DisplaySettingsPage() {
   const { supabase, organisation } =
-    await requireStaffSession();
+    await requireMediaSession();
 
   const { data: location } = await supabase
     .from("church_locations")

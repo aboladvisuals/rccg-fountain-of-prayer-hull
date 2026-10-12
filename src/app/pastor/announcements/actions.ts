@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaffSession } from "@/lib/staff/session";
+import { requireMediaSession } from "@/lib/media/session";
 
 export async function createAnnouncement(formData: FormData) {
   try {
     const { supabase, user, organisation } =
-      await requireStaffSession();
+      await requireMediaSession();
 
     const title = String(formData.get("title") ?? "").trim();
     const body = String(formData.get("body") ?? "").trim();
@@ -61,7 +61,7 @@ export async function setAnnouncementActive(
 ) {
   try {
     const { supabase, organisation } =
-      await requireStaffSession();
+      await requireMediaSession();
 
     const { error } = await supabase
       .from("announcements")
