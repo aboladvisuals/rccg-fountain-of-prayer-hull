@@ -1,10 +1,11 @@
-import LivePreview from "./live-preview";
 import Link from "next/link";
+import { localDate } from "@/lib/member/dashboard";
 import { requireMediaSession } from "@/lib/media/session";
 import {
   setPresentationMode,
   showManualSlide,
 } from "./actions";
+import LivePreview from "./live-preview";
 import ShowOnScreenButton from "./show-on-screen-button";
 
 export default async function MediaDashboardPage() {
@@ -20,7 +21,7 @@ export default async function MediaDashboardPage() {
 
   const { data: location } = await supabase
     .from("church_locations")
-    .select("id")
+    .select("id, timezone")
     .eq("organisation_id", organisation.id)
     .eq("slug", "hull")
     .eq("is_active", true)
@@ -67,6 +68,92 @@ export default async function MediaDashboardPage() {
     presentationFeed?.filter(
       (item) => item.content_type === "announcement"
     ) ?? [];
+
+  let liveService: {
+    id: string;
+    title: string;
+  } | null = null;
+
+  let members: string[] = [];
+  let visitors: string[] = [];
+  let serving: string[] = [];
+
+  if (location) {
+    const today = localDate(
+      new Date(),
+      location.timezone
+    );
+
+    const { data: service } = await supabase
+      .from("services")
+      .select("id, title")
+      .eq("organisation_id", organisation.id)
+      .eq("location_id", location.id)
+      .eq("service_date", today)
+      .eq("status", "live")
+      .order("starts_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    liveService = service;
+
+    if (service) {
+      const { data: presence } = await supabase
+        .from("live_presence")
+        .select(`
+          display_name,
+          is_visitor,
+          is_serving
+        `)
+        .eq("organisation_id", organisation.id)
+        .eq("location_id", location.id)
+        .eq("service_id", service.id)
+        .not("display_name", "is", null);
+
+      members = [
+        ...new Set(
+          (presence ?? [])
+            .filter((person) => !person.is_visitor)
+            .map((person) => person.display_name)
+            .filter(
+              (name): name is string =>
+                typeof name === "string" &&
+                name.trim().length > 0
+            )
+        ),
+      ];
+
+      visitors = [
+        ...new Set(
+          (presence ?? [])
+            .filter((person) => person.is_visitor)
+            .map((person) => person.display_name)
+            .filter(
+              (name): name is string =>
+                typeof name === "string" &&
+                name.trim().length > 0
+            )
+        ),
+      ];
+
+      serving = [
+        ...new Set(
+          (presence ?? [])
+            .filter(
+              (person) =>
+                person.is_serving &&
+                typeof person.display_name === "string"
+            )
+            .map((person) => person.display_name)
+            .filter(
+              (name): name is string =>
+                typeof name === "string" &&
+                name.trim().length > 0
+            )
+        ),
+      ];
+    }
+  }
 
   async function showWelcome() {
     "use server";
@@ -170,9 +257,7 @@ export default async function MediaDashboardPage() {
             <div>
               <p className="text-sm text-slate-500">
                 Current presentation mode
-                
               </p>
-              <LivePreview />
 
               <h2 className="mt-1 text-xl font-semibold capitalize">
                 {presentationState?.mode ?? "Unavailable"}
@@ -195,6 +280,8 @@ export default async function MediaDashboardPage() {
             </Link>
           </div>
         </section>
+
+        <LivePreview />
 
         <section className="mt-8 grid gap-4 sm:grid-cols-3">
           <form action={showWelcome}>
@@ -241,6 +328,112 @@ export default async function MediaDashboardPage() {
               </span>
             </button>
           </form>
+        </section>
+
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Live service
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Presence & serving
+            </h2>
+
+            <p className="mt-2 text-sm text-slate-600">
+              Only presentation-safe names already permitted for display are shown here.
+            </p>
+          </div>
+
+          {!liveService ? (
+            <div className="mt-5 rounded-xl bg-slate-50 p-5 text-sm text-slate-600">
+              No live service is active right now.
+            </div>
+          ) : (
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <article className="rounded-2xl border border-slate-200 p-5">
+                <p className="text-sm text-slate-500">
+                  {liveService.title}
+                </p>
+
+                <h3 className="mt-1 text-lg font-semibold">
+                  Presence
+                </h3>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div className="rounded-xl bg-slate-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      Members & family
+                    </p>
+
+                    <p className="mt-2 text-2xl font-bold">
+                      {members.length}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl bg-amber-50 p-4">
+                    <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+                      Visitors
+                    </p>
+
+                    <p className="mt-2 text-2xl font-bold text-amber-900">
+                      {visitors.length}
+                    </p>
+                  </div>
+                </div>
+
+                {members.length === 0 &&
+                visitors.length === 0 ? (
+                  <p className="mt-4 text-sm text-slate-500">
+                    No presentation-safe presence names are available yet.
+                  </p>
+                ) : (
+                  <ShowOnScreenButton
+                    slideType="presence"
+                    title="We're glad you're here"
+                    payload={{
+                      members,
+                      visitors,
+                    }}
+                  />
+                )}
+              </article>
+
+              <article className="rounded-2xl border border-slate-200 p-5">
+                <p className="text-sm text-slate-500">
+                  {liveService.title}
+                </p>
+
+                <h3 className="mt-1 text-lg font-semibold">
+                  Serving team
+                </h3>
+
+                <div className="mt-4 rounded-xl bg-purple-50 p-4">
+                  <p className="text-xs font-semibold uppercase tracking-wide text-purple-700">
+                    Serving today
+                  </p>
+
+                  <p className="mt-2 text-2xl font-bold text-purple-950">
+                    {serving.length}
+                  </p>
+                </div>
+
+                {serving.length === 0 ? (
+                  <p className="mt-4 text-sm text-slate-500">
+                    No presentation-safe serving names are available yet.
+                  </p>
+                ) : (
+                  <ShowOnScreenButton
+                    slideType="serving"
+                    title="Thank you for serving"
+                    payload={{
+                      names: serving,
+                    }}
+                  />
+                )}
+              </article>
+            </div>
+          )}
         </section>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-2">

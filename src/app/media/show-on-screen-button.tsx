@@ -15,12 +15,14 @@ type Props = {
     | "lyrics";
   title: string;
   content?: string;
+  payload?: Record<string, unknown>;
 };
 
 export default function ShowOnScreenButton({
   slideType,
   title,
   content,
+  payload,
 }: Props) {
   const [pending, startTransition] = useTransition();
   const [message, setMessage] = useState("");
@@ -33,6 +35,7 @@ export default function ShowOnScreenButton({
         slideType,
         title,
         content,
+        payload,
       });
 
       setMessage(result.message);
