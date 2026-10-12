@@ -50,13 +50,59 @@ export default async function MediaDashboardPage() {
     });
   }
 
+  async function showVerse(formData: FormData) {
+    "use server";
+
+    const reference = String(
+      formData.get("reference") ?? ""
+    ).trim();
+
+    const verse = String(
+      formData.get("verse") ?? ""
+    ).trim();
+
+    if (!reference || !verse) {
+      return;
+    }
+
+    await showManualSlide({
+      slideType: "verse",
+      title: reference,
+      content: verse,
+    });
+  }
+
+  async function showLyrics(formData: FormData) {
+    "use server";
+
+    const songTitle = String(
+      formData.get("songTitle") ?? ""
+    ).trim();
+
+    const lyrics = String(
+      formData.get("lyrics") ?? ""
+    ).trim();
+
+    if (!songTitle || !lyrics) {
+      return;
+    }
+
+    await showManualSlide({
+      slideType: "lyrics",
+      title: songTitle,
+      content: lyrics,
+    });
+  }
+
   async function resumeAutomatic() {
     "use server";
+
     await setPresentationMode("auto");
   }
 
   async function clearDisplay() {
     "use server";
+
     await setPresentationMode("blank");
   }
 
@@ -162,6 +208,108 @@ export default async function MediaDashboardPage() {
               <span className="mt-2 block text-lg font-semibold">
                 Clear auditorium display
               </span>
+            </button>
+          </form>
+        </section>
+
+        <section className="mt-8 grid gap-6 lg:grid-cols-2">
+          <form
+            action={showVerse}
+            className="rounded-2xl border border-slate-200 bg-white p-6"
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Bible presentation
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Show Bible verse
+            </h2>
+
+            <label className="mt-5 block">
+              <span className="text-sm font-semibold text-slate-700">
+                Reference
+              </span>
+
+              <input
+                name="reference"
+                type="text"
+                required
+                maxLength={100}
+                placeholder="John 3:16"
+                className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+              />
+            </label>
+
+            <label className="mt-4 block">
+              <span className="text-sm font-semibold text-slate-700">
+                Verse text
+              </span>
+
+              <textarea
+                name="verse"
+                required
+                maxLength={2000}
+                rows={7}
+                placeholder="Enter the verse text to display..."
+                className="mt-2 w-full resize-y rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+            >
+              Show verse on screen
+            </button>
+          </form>
+
+          <form
+            action={showLyrics}
+            className="rounded-2xl border border-slate-200 bg-white p-6"
+          >
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+              Worship presentation
+            </p>
+
+            <h2 className="mt-2 text-xl font-bold">
+              Show song lyrics
+            </h2>
+
+            <label className="mt-5 block">
+              <span className="text-sm font-semibold text-slate-700">
+                Song title
+              </span>
+
+              <input
+                name="songTitle"
+                type="text"
+                required
+                maxLength={150}
+                placeholder="Song title"
+                className="mt-2 w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+              />
+            </label>
+
+            <label className="mt-4 block">
+              <span className="text-sm font-semibold text-slate-700">
+                Lyrics
+              </span>
+
+              <textarea
+                name="lyrics"
+                required
+                maxLength={5000}
+                rows={7}
+                placeholder="Enter the section of lyrics to display..."
+                className="mt-2 w-full resize-y rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-500"
+              />
+            </label>
+
+            <button
+              type="submit"
+              className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800"
+            >
+              Show lyrics on screen
             </button>
           </form>
         </section>
