@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { localDate } from "@/lib/member/dashboard";
 import RotatingDisplay, {
   type DisplaySlide,
+  type PresentationState,
 } from "./display-client";
 
 export const dynamic = "force-dynamic";
@@ -22,6 +23,9 @@ export default async function DisplayPage() {
     return (
       <RotatingDisplay
         serviceTitle="Welcome"
+        organisationId={null}
+        locationId={null}
+        initialPresentationState={null}
         slides={[
           {
             type: "welcome",
@@ -45,6 +49,20 @@ export default async function DisplayPage() {
   if (!location) {
     return null;
   }
+
+  const { data: presentationState } = await supabase
+    .from("presentation_state")
+    .select(`
+      mode,
+      slide_type,
+      title,
+      content,
+      payload,
+      updated_at
+    `)
+    .eq("organisation_id", organisation.id)
+    .eq("location_id", location.id)
+    .maybeSingle();
 
   const today = localDate(new Date(), location.timezone);
   const [, month, day] = today.split("-").map(Number);
@@ -210,11 +228,32 @@ export default async function DisplayPage() {
     }
   }
 
+  const initialPresentationState: PresentationState | null =
+    presentationState
+      ? {
+          mode: presentationState.mode as
+            | "auto"
+            | "manual"
+            | "blank",
+          slideType: presentationState.slide_type,
+          title: presentationState.title,
+          content: presentationState.content,
+          payload:
+            presentationState.payload &&
+            typeof presentationState.payload === "object"
+              ? presentationState.payload
+              : {},
+          updatedAt: presentationState.updated_at,
+        }
+      : null;
+
   return (
     <RotatingDisplay
       slides={slides}
       serviceTitle={service?.title ?? "Welcome"}
+      organisationId={organisation.id}
+      locationId={location.id}
+      initialPresentationState={initialPresentationState}
     />
   );
 }
-

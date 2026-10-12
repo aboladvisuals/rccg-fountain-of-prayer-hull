@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { requireMediaSession } from "@/lib/media/session";
+import {
+  setPresentationMode,
+  showManualSlide,
+} from "./actions";
 
 export default async function MediaDashboardPage() {
-  const { organisation, role } = await requireMediaSession();
+  const { supabase, organisation, role } =
+    await requireMediaSession();
 
   const roleLabel =
     role === "admin"
@@ -10,6 +15,50 @@ export default async function MediaDashboardPage() {
       : role === "pastor"
         ? "Pastor"
         : "Media";
+
+  const { data: location } = await supabase
+    .from("church_locations")
+    .select("id")
+    .eq("organisation_id", organisation.id)
+    .eq("slug", "hull")
+    .eq("is_active", true)
+    .maybeSingle();
+
+  const { data: presentationState } = location
+    ? await supabase
+        .from("presentation_state")
+        .select(`
+          mode,
+          slide_type,
+          title,
+          content,
+          updated_at
+        `)
+        .eq("organisation_id", organisation.id)
+        .eq("location_id", location.id)
+        .maybeSingle()
+    : { data: null };
+
+  async function showWelcome() {
+    "use server";
+
+    await showManualSlide({
+      slideType: "welcome",
+      title: "Welcome to Fountain of Prayer Hull",
+      content:
+        "Jesus Christ the same yesterday, and today, and forever.",
+    });
+  }
+
+  async function resumeAutomatic() {
+    "use server";
+    await setPresentationMode("auto");
+  }
+
+  async function clearDisplay() {
+    "use server";
+    await setPresentationMode("blank");
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
@@ -37,25 +86,87 @@ export default async function MediaDashboardPage() {
           </h1>
 
           <p className="mt-3 max-w-3xl text-purple-100">
-            Control presentation-safe content for the auditorium display
-            without exposing private pastoral or member information.
+            Control presentation-safe content for the auditorium display.
           </p>
         </section>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          <Link
-            href="/display"
-            target="_blank"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Auditorium
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Open live display ↗
-            </h2>
-          </Link>
+        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-sm text-slate-500">
+                Current presentation mode
+              </p>
 
+              <h2 className="mt-1 text-xl font-semibold capitalize">
+                {presentationState?.mode ?? "Unavailable"}
+              </h2>
+
+              {presentationState?.mode === "manual" &&
+                presentationState.title && (
+                  <p className="mt-2 text-sm text-slate-600">
+                    Showing: {presentationState.title}
+                  </p>
+                )}
+            </div>
+
+            <Link
+              href="/display"
+              target="_blank"
+              className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm font-semibold text-purple-800"
+            >
+              Open live display ↗
+            </Link>
+          </div>
+        </section>
+
+        <section className="mt-8 grid gap-4 sm:grid-cols-3">
+          <form action={showWelcome}>
+            <button
+              type="submit"
+              className="w-full rounded-2xl bg-purple-700 p-6 text-left text-white transition hover:bg-purple-800"
+            >
+              <span className="text-sm text-purple-200">
+                Manual presentation
+              </span>
+
+              <span className="mt-2 block text-lg font-semibold">
+                Show Welcome
+              </span>
+            </button>
+          </form>
+
+          <form action={resumeAutomatic}>
+            <button
+              type="submit"
+              className="w-full rounded-2xl border border-slate-200 bg-white p-6 text-left transition hover:border-purple-300"
+            >
+              <span className="text-sm text-slate-500">
+                Display mode
+              </span>
+
+              <span className="mt-2 block text-lg font-semibold">
+                Resume automatic rotation
+              </span>
+            </button>
+          </form>
+
+          <form action={clearDisplay}>
+            <button
+              type="submit"
+              className="w-full rounded-2xl border border-red-200 bg-red-50 p-6 text-left text-red-900 transition hover:border-red-300"
+            >
+              <span className="text-sm text-red-600">
+                Emergency control
+              </span>
+
+              <span className="mt-2 block text-lg font-semibold">
+                Clear auditorium display
+              </span>
+            </button>
+          </form>
+        </section>
+
+        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Link
             href="/pastor/announcements"
             className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
@@ -63,6 +174,7 @@ export default async function MediaDashboardPage() {
             <p className="text-sm text-slate-500">
               Presentation content
             </p>
+
             <h2 className="mt-2 text-lg font-semibold">
               Announcements →
             </h2>
@@ -75,22 +187,11 @@ export default async function MediaDashboardPage() {
             <p className="text-sm text-slate-500">
               Display behaviour
             </p>
+
             <h2 className="mt-2 text-lg font-semibold">
               Display settings →
             </h2>
           </Link>
-        </section>
-
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
-          <h2 className="text-lg font-semibold">
-            Media controls are being expanded
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Next we will add a presentation controller, preview, Show on Screen,
-            Bible verses, lyrics, welcome screens, approved testimonies,
-            attendance-safe presentation data, and Supabase Realtime.
-          </p>
         </section>
       </div>
     </main>
