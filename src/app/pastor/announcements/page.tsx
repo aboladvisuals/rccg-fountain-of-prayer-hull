@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { requireStaffSession } from "@/lib/staff/session";
+import { requireMediaSession } from "@/lib/media/session";
 import AnnouncementForm from "./announcement-form";
 import AnnouncementToggle from "./announcement-toggle";
 
 export default async function PastorAnnouncementsPage() {
   const { supabase, organisation } =
-    await requireStaffSession();
+    await requireMediaSession();
 
   const { data: announcements, error } = await supabase
     .from("announcements")
@@ -22,12 +22,11 @@ export default async function PastorAnnouncementsPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
       <div className="mx-auto max-w-4xl">
-
         <Link
-          href="/pastor"
+          href="/media"
           className="text-sm font-semibold text-purple-700"
         >
-          ← Back to Pastor & Admin Dashboard
+          ← Back to Media Dashboard
         </Link>
 
         <section className="mt-8">
@@ -115,4 +114,3 @@ export default async function PastorAnnouncementsPage() {
     </main>
   );
 }
-

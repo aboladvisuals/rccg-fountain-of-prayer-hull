@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { requireStaffSession } from "@/lib/staff/session";
+
 import { localDate } from "@/lib/member/dashboard";
+import { requireStaffSession } from "@/lib/staff/session";
 
 export default async function PastorDashboardPage() {
   const { supabase, organisation, role } =
@@ -24,7 +25,10 @@ export default async function PastorDashboardPage() {
   let visitorsPresent = 0;
 
   if (location) {
-    const today = localDate(new Date(), location.timezone);
+    const today = localDate(
+      new Date(),
+      location.timezone
+    );
 
     const { data: liveService } = await supabase
       .from("services")
@@ -40,26 +44,41 @@ export default async function PastorDashboardPage() {
     service = liveService;
 
     if (service) {
-      const [
-        attendanceResult,
-        visitorResult,
-      ] = await Promise.all([
-        supabase
-          .from("attendance")
-          .select("id", { count: "exact", head: true })
-          .eq("organisation_id", organisation.id)
-          .eq("service_id", service.id),
+      const [attendanceResult, visitorResult] =
+        await Promise.all([
+          supabase
+            .from("attendance")
+            .select("id", {
+              count: "exact",
+              head: true,
+            })
+            .eq(
+              "organisation_id",
+              organisation.id
+            )
+            .eq("service_id", service.id),
 
-        supabase
-          .from("visitors")
-          .select("id", { count: "exact", head: true })
-          .eq("organisation_id", organisation.id)
-          .eq("service_id", service.id),
-      ]);
+          supabase
+            .from("visitors")
+            .select("id", {
+              count: "exact",
+              head: true,
+            })
+            .eq(
+              "organisation_id",
+              organisation.id
+            )
+            .eq("service_id", service.id),
+        ]);
 
-      membersPresent = attendanceResult.count ?? 0;
-      visitorsPresent = visitorResult.count ?? 0;
-      totalPresent = membersPresent + visitorsPresent;
+      membersPresent =
+        attendanceResult.count ?? 0;
+
+      visitorsPresent =
+        visitorResult.count ?? 0;
+
+      totalPresent =
+        membersPresent + visitorsPresent;
     }
   }
 
@@ -69,25 +88,32 @@ export default async function PastorDashboardPage() {
   ] = await Promise.all([
     supabase
       .from("private_notes")
-      .select("id", { count: "exact", head: true })
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
       .eq("organisation_id", organisation.id)
       .eq("is_read", false),
 
     supabase
       .from("testimonies")
-      .select("id", { count: "exact", head: true })
+      .select("id", {
+        count: "exact",
+        head: true,
+      })
       .eq("organisation_id", organisation.id)
       .eq("is_approved", false),
   ]);
 
-  const unreadNotes = unreadNotesResult.count ?? 0;
+  const unreadNotes =
+    unreadNotesResult.count ?? 0;
+
   const pendingTestimonies =
     pendingTestimoniesResult.count ?? 0;
 
   return (
     <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
       <div className="mx-auto max-w-5xl">
-
         <header className="flex flex-wrap items-center justify-between gap-4">
           <Link
             href="/member"
@@ -97,7 +123,9 @@ export default async function PastorDashboardPage() {
           </Link>
 
           <span className="rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-800">
-            {role === "admin" ? "Administrator" : "Pastor"}
+            {role === "admin"
+              ? "Administrator"
+              : "Pastor"}
           </span>
         </header>
 
@@ -111,7 +139,8 @@ export default async function PastorDashboardPage() {
           </h1>
 
           <p className="mt-3 text-purple-100">
-            Live church operations, pastoral care and service management.
+            Live church operations, pastoral care
+            and service management.
           </p>
         </section>
 
@@ -133,6 +162,11 @@ export default async function PastorDashboardPage() {
               <p className="font-semibold">
                 No live service right now
               </p>
+
+              <p className="mt-2 text-sm text-slate-500">
+                Start a scheduled service when the
+                congregation is ready.
+              </p>
             </div>
           ) : (
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
@@ -140,6 +174,7 @@ export default async function PastorDashboardPage() {
                 <p className="text-sm text-slate-500">
                   Total present
                 </p>
+
                 <p className="mt-2 text-3xl font-bold">
                   {totalPresent}
                 </p>
@@ -149,6 +184,7 @@ export default async function PastorDashboardPage() {
                 <p className="text-sm text-slate-500">
                   Members & family
                 </p>
+
                 <p className="mt-2 text-3xl font-bold text-purple-700">
                   {membersPresent}
                 </p>
@@ -158,6 +194,7 @@ export default async function PastorDashboardPage() {
                 <p className="text-sm text-slate-500">
                   Visitors
                 </p>
+
                 <p className="mt-2 text-3xl font-bold text-amber-600">
                   {visitorsPresent}
                 </p>
@@ -166,129 +203,183 @@ export default async function PastorDashboardPage() {
           )}
         </section>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-2">
+        <section className="mt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+            Church operations
+          </p>
 
-          <Link
-            href="/pastor/presence"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Live service
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Live presence →
-            </h2>
-          </Link>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/pastor/services"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Service management
+              </p>
 
-          <Link
-            href="/pastor/visitors"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Welcome ministry
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Visitors today →
-            </h2>
-          </Link>
+              <h2 className="mt-2 text-lg font-semibold">
+                Church services →
+              </h2>
+            </Link>
 
-          <Link
-            href="/pastor/private-notes"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm text-slate-500">
-                  Pastoral care
-                </p>
-                <h2 className="mt-2 text-lg font-semibold">
-                  Private notes →
-                </h2>
+            <Link
+              href="/pastor/presence"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Live service
+              </p>
+
+              <h2 className="mt-2 text-lg font-semibold">
+                Live presence →
+              </h2>
+            </Link>
+
+            <Link
+              href="/pastor/visitors"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Welcome ministry
+              </p>
+
+              <h2 className="mt-2 text-lg font-semibold">
+                Visitors today →
+              </h2>
+            </Link>
+
+            <Link
+              href="/media"
+              className="rounded-2xl border border-purple-200 bg-purple-50 p-6 transition hover:border-purple-400"
+            >
+              <p className="text-sm text-purple-700">
+                Auditorium presentation
+              </p>
+
+              <h2 className="mt-2 text-lg font-semibold text-purple-950">
+                Media dashboard →
+              </h2>
+            </Link>
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+            Pastoral care
+          </p>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/pastor/private-notes"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    Confidential
+                  </p>
+
+                  <h2 className="mt-2 text-lg font-semibold">
+                    Private notes →
+                  </h2>
+                </div>
+
+                {unreadNotes > 0 && (
+                  <span className="rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
+                    {unreadNotes}
+                  </span>
+                )}
               </div>
+            </Link>
 
-              {unreadNotes > 0 && (
-                <span className="rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
-                  {unreadNotes}
-                </span>
-              )}
-            </div>
-          </Link>
+            <Link
+              href="/pastor/testimonies"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm text-slate-500">
+                    Review
+                  </p>
 
-          <Link
-            href="/pastor/testimonies"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <p className="text-sm text-slate-500">
-                  Review
-                </p>
-                <h2 className="mt-2 text-lg font-semibold">
-                  Testimonies →
-                </h2>
+                  <h2 className="mt-2 text-lg font-semibold">
+                    Testimonies →
+                  </h2>
+                </div>
+
+                {pendingTestimonies > 0 && (
+                  <span className="rounded-full bg-amber-500 px-3 py-1 text-sm font-semibold text-white">
+                    {pendingTestimonies}
+                  </span>
+                )}
               </div>
+            </Link>
+          </div>
+        </section>
 
-              {pendingTestimonies > 0 && (
-                <span className="rounded-full bg-amber-500 px-3 py-1 text-sm font-semibold text-white">
-                  {pendingTestimonies}
-                </span>
-              )}
-            </div>
-          </Link>
+        <section className="mt-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
+            Display & communication
+          </p>
 
-          <Link
-            href="/pastor/services"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Service management
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Church services →
-            </h2>
-          </Link>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <Link
+              href="/pastor/announcements"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Presentation content
+              </p>
 
-          <Link
-            href="/pastor/announcements"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Display management
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Announcements →
-            </h2>
-          </Link>
+              <h2 className="mt-2 text-lg font-semibold">
+                Announcements →
+              </h2>
+            </Link>
 
-          <Link
-            href="/pastor/display-settings"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Auditorium controls
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Display settings →
-            </h2>
-          </Link>
+            <Link
+              href="/pastor/display-settings"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Auditorium controls
+              </p>
 
-          <Link
-            href="/display"
-            target="_blank"
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-          >
-            <p className="text-sm text-slate-500">
-              Big screen
-            </p>
-            <h2 className="mt-2 text-lg font-semibold">
-              Open auditorium display ↗
-            </h2>
-          </Link>
+              <h2 className="mt-2 text-lg font-semibold">
+                Display settings →
+              </h2>
+            </Link>
 
+            <Link
+              href="/display"
+              target="_blank"
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+            >
+              <p className="text-sm text-slate-500">
+                Big screen
+              </p>
+
+              <h2 className="mt-2 text-lg font-semibold">
+                Open auditorium display ↗
+              </h2>
+            </Link>
+
+            {role === "admin" && (
+              <Link
+                href="/admin/users"
+                className="rounded-2xl border border-slate-300 bg-slate-900 p-6 text-white transition hover:bg-slate-800"
+              >
+                <p className="text-sm text-slate-300">
+                  Administration
+                </p>
+
+                <h2 className="mt-2 text-lg font-semibold">
+                  User & role management →
+                </h2>
+              </Link>
+            )}
+          </div>
         </section>
       </div>
     </main>
   );
 }
-
-

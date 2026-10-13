@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { requireStaffSession } from "@/lib/staff/session";
+import { requireMediaSession } from "@/lib/media/session";
 
 export async function updateDisplaySettings(formData: FormData) {
   try {
     const { supabase, user, organisation } =
-      await requireStaffSession();
+      await requireMediaSession();
 
     const welcomeMessage = String(
       formData.get("welcomeMessage") ?? ""
