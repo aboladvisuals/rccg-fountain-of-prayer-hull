@@ -48,52 +48,30 @@ export default async function MediaDashboardPage() {
 
   let birthdayNames: string[] = [];
 
-  if (location) {
-    const today = localDate(
-      new Date(),
-      location.timezone
-    );
+if (location) {
+  const today = localDate(
+    new Date(),
+    location.timezone
+  );
 
-    const [, month, day] = today
-      .split("-")
-      .map(Number);
+  const [, month, day] = today
+    .split("-")
+    .map(Number);
 
-    const [{ data: profiles }, { data: familyMembers }] =
-      await Promise.all([
-        supabase
-          .from("profiles")
-          .select("full_name, first_name")
-          .eq("birth_month", month)
-          .eq("birth_day", day)
-          .eq("show_name_on_display", true),
+  const { data: birthdayRows } = await supabase.rpc(
+    "get_media_birthday_names",
+    {
+      requested_org: organisation.id,
+      requested_month: month,
+      requested_day: day,
+    }
+  );
 
-        supabase
-          .from("family_members")
-          .select("first_name, last_name")
-          .eq("organisation_id", organisation.id)
-          .eq("birth_month", month)
-          .eq("birth_day", day)
-          .eq("show_name_on_display", true),
-      ]);
-
-    birthdayNames = [
-      ...(profiles ?? []).map(
-        (profile) =>
-          profile.full_name?.trim() ||
-          profile.first_name?.trim()
-      ),
-
-      ...(familyMembers ?? []).map(
-        (member) =>
-          [member.first_name, member.last_name]
-            .filter(Boolean)
-            .join(" ")
-      ),
-    ].filter(
-      (name): name is string =>
-        Boolean(name)
-    );
-  }
+  birthdayNames =
+  (birthdayRows as { display_name: string }[] | null)?.map(
+    (row) => row.display_name
+  ) ?? [];
+}
 
   const { data: presentationFeed } = await supabase
     .from("presentation_public_feed")
