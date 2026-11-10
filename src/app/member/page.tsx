@@ -3,6 +3,7 @@ import { requireMemberSession } from "@/lib/member/session";
 import { hasStaffAccess, loadDashboard } from "@/lib/member/dashboard";
 import SignOutButton from "./sign-out-button";
 import PresenceControls from "./presence-controls";
+import MyDepartments from "./my-departments";
 
 const memberTools = [
   ["/member/family", "Family", "Manage your household and family check-in."],
@@ -10,6 +11,8 @@ const memberTools = [
   ["/member/private-note", "Private note", "Send a private message to the pastoral team."],
   ["/member/testimony", "Testimony", "Share what God has done in your life."],
   ["/member/profile", "Profile & privacy", "Manage your details and church display preferences."],
+  ["/member/bible", "Bible", "Read Scripture through an authorised source."],
+  ["/member/hymnal", "Hymnal", "Search hymn numbers and titles. Lyrics are not stored."],
 ];
 
 export default async function MemberPage() {
@@ -76,6 +79,8 @@ export default async function MemberPage() {
 
         </section>
 
+        <MyDepartments supabase={supabase} profileId={user.id} />
+
         <section className="mt-9" aria-labelledby="member-tools">
           <h2 id="member-tools" className="text-xl font-bold">
             Your church life
@@ -122,9 +127,3 @@ export default async function MemberPage() {
     </main>
   );
 }
-
-
-
-
-
-
