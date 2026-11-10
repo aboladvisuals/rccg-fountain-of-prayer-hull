@@ -10,7 +10,7 @@ export default async function ChoirPage() {
       `
         id,
         status,
-        department:church_departments!inner (slug)
+        department:church_departments!inner (id, slug)
       `
     )
     .eq("profile_id", user.id)
@@ -34,14 +34,19 @@ export default async function ChoirPage() {
     );
   }
 
-  const departmentId = membership.id;
+  const department = Array.isArray(membership.department)
+    ? membership.department[0]
+    : membership.department;
+  const departmentId = department?.id;
 
-  const { data: events } = await supabase
-    .from("department_events")
-    .select("id, title, starts_at, ends_at, venue, status")
-    .eq("department_id", departmentId)
-    .order("starts_at", { ascending: true })
-    .limit(20);
+  const { data: events } = departmentId
+    ? await supabase
+        .from("department_events")
+        .select("id, title, starts_at, ends_at, venue, status")
+        .eq("department_id", departmentId)
+        .order("starts_at", { ascending: true })
+        .limit(20)
+    : { data: [] };
 
   return (
     <main className="min-h-screen bg-slate-50 px-5 py-8">
