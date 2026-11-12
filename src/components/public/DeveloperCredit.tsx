@@ -1,3 +1,5 @@
+import s from "./public.module.css";
+
 /**
  * Public developer attribution.
  *
@@ -22,19 +24,21 @@ export default function DeveloperCredit() {
   const telHref = phone ? `tel:${phone.replace(/\s+/g, "")}` : null;
 
   return (
-    <p className="developerCredit">
+    <p className={s.developerCredit}>
       <span>Website designed & developed by </span>
       {telHref ? (
-        <a href={telHref} className="developerCreditLink">
+        <a href={telHref} className={s.developerCreditLink}>
           {DEVELOPER_NAME}
-          <span className="srOnly">, {DEVELOPER_TITLE}. Call to discuss websites and software.</span>
+          <span className={s.srOnly}>
+            , {DEVELOPER_TITLE}. Call to discuss websites and software.
+          </span>
         </a>
       ) : (
-        <span className="developerCreditName">{DEVELOPER_NAME}</span>
+        <span className={s.developerCreditName}>{DEVELOPER_NAME}</span>
       )}
-      <span className="developerCreditTitle"> · {DEVELOPER_TITLE}</span>
+      <span className={s.developerCreditTitle}> · {DEVELOPER_TITLE}</span>
       {!telHref && (
-        <span className="developerCreditPending"> Contact details pending approval.</span>
+        <span className={s.developerCreditPending}> Contact details pending approval.</span>
       )}
     </p>
   );
