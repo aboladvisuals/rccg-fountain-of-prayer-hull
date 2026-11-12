@@ -1786,3 +1786,15 @@
   outline: 2px solid var(--color-gold-300);
   outline-offset: 3px;
 }
+
+.developerCreditLinks {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
+  margin-left: 0.6rem;
+}
+.developerCreditNumber {
+  color: rgb(255 248 238 / 0.7);
+  font-variant-numeric: tabular-nums;
+}
