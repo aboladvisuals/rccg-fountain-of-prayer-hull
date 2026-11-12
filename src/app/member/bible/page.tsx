@@ -5,12 +5,12 @@ export default async function BiblePage() {
   await requireMemberSession();
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
         <Link href="/member" className="text-sm font-semibold text-purple-700">
           ← Member dashboard
         </Link>
-        <h1 className="mt-6 text-3xl font-bold">Bible</h1>
+        <h1 className="mt-6 text-4xl display-title">Bible</h1>
         <p className="mt-3 text-slate-600">
           Scripture is served through an authorised provider. This page does not store copyrighted Bible text.
         </p>
@@ -19,7 +19,7 @@ export default async function BiblePage() {
         </p>
         <a
           href="https://www.bible.com/"
-          className="mt-6 inline-flex rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white"
+          className="mt-6 inline-flex rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white btn-primary"
           target="_blank"
           rel="noreferrer"
         >

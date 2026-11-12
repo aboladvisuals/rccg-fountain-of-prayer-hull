@@ -10,12 +10,12 @@ export default async function HymnalPage() {
   await requireMemberSession();
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
         <Link href="/member" className="text-sm font-semibold text-purple-700">
           ← Member dashboard
         </Link>
-        <h1 className="mt-6 text-3xl font-bold">Hymnal</h1>
+        <h1 className="mt-6 text-4xl display-title">Hymnal</h1>
         <p className="mt-3 text-sm text-slate-600">
           Index only. Lyrics are not stored. Confirm the authorised RCCG Redeemed Hymnal edition and permission before adding content.
         </p>
@@ -23,7 +23,7 @@ export default async function HymnalPage() {
           {sample.map((hymn) => (
             <li
               key={hymn.number}
-              className="rounded-2xl border border-slate-200 bg-white p-5"
+              className="app-card p-5"
             >
               <p className="font-semibold">
                 {hymn.number}. {hymn.title}

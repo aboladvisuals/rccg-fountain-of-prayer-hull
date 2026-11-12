@@ -21,7 +21,7 @@ export default async function ProfilePage() {
     .maybeSingle();
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
 
         <Link
@@ -36,7 +36,7 @@ export default async function ProfilePage() {
             Account
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Profile & privacy
           </h1>
 

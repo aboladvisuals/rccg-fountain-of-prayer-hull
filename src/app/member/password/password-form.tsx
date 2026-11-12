@@ -135,7 +135,7 @@ export default function PasswordForm() {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-xl bg-purple-700 px-5 py-3 font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-xl bg-purple-700 px-5 py-3 font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-60 btn-primary min-h-11"
       >
         {submitting ? "Updating password..." : "Set or change password"}
       </button>

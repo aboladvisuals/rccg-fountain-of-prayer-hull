@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Icon from "@/components/ui/Icon";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Props = {
@@ -26,42 +27,50 @@ export default async function MyDepartments({ supabase, profileId }: Props) {
   const rows = data ?? [];
 
   return (
-    <section className="mt-9" aria-labelledby="my-departments">
-      <h2 id="my-departments" className="text-xl font-bold">
+    <section aria-labelledby="my-departments">
+      <p className="kicker">Serving</p>
+      <h2 id="my-departments" className="section-title mt-1">
         My Departments
       </h2>
       {rows.length === 0 ? (
-        <p className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
-          You are not assigned to a department yet.
-        </p>
+        <div className="app-card mt-4 flex items-start gap-4 p-6">
+          <span className="tool-icon shrink-0">
+            <Icon name="department" />
+          </span>
+          <p className="text-sm leading-6 text-slate-600">
+            You are not assigned to a department yet.
+          </p>
+        </div>
       ) : (
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <ul className="app-card mt-4 divide-y divide-slate-200 overflow-hidden">
           {rows.map((row) => {
             const department = Array.isArray(row.department)
               ? row.department[0]
               : row.department;
             if (!department) return null;
             return (
-              <article
-                key={row.id}
-                className="rounded-2xl border border-slate-200 bg-white p-6"
-              >
-                <h3 className="text-lg font-semibold">{department.name}</h3>
-                <p className="mt-1 text-sm capitalize text-slate-500">
-                  {row.status}
-                </p>
+              <li key={row.id} className="flex flex-wrap items-center justify-between gap-3 p-5">
+                <div className="flex items-center gap-3">
+                  <span className="tool-icon shrink-0">
+                    <Icon name={department.slug === "choir-and-worship" ? "hymnal" : "department"} />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">{department.name}</h3>
+                    <p className="text-sm capitalize text-slate-500">{row.status}</p>
+                  </div>
+                </div>
                 {department.slug === "choir-and-worship" && (
                   <Link
                     href="/member/choir"
-                    className="mt-3 inline-block text-sm font-semibold text-purple-700"
+                    className="btn btn-outline btn-secondary min-h-11 px-4 py-2 text-sm"
                   >
-                    Open choir →
+                    Open choir <span aria-hidden="true">→</span>
                   </Link>
                 )}
-              </article>
+              </li>
             );
           })}
-        </div>
+        </ul>
       )}
     </section>
   );

@@ -50,7 +50,7 @@ export default function ProfileForm({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-slate-200 bg-white p-6"
+      className="app-card p-6"
     >
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
@@ -178,7 +178,7 @@ export default function ProfileForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-6 w-full rounded-xl bg-purple-700 px-4 py-3 font-semibold text-white disabled:opacity-60"
+        className="mt-6 w-full rounded-xl bg-purple-700 px-4 py-3 font-semibold text-white disabled:opacity-60 btn-primary min-h-11"
       >
         {pending ? "Saving..." : "Save profile"}
       </button>

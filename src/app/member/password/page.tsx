@@ -16,12 +16,12 @@ export default async function MemberPasswordPage() {
 
   return (
     <main className="mx-auto w-full max-w-2xl px-6 py-10">
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-card p-6">
         <p className="text-sm font-semibold uppercase tracking-[0.16em] text-purple-700">
           Account security
         </p>
 
-        <h1 className="mt-2 text-3xl font-bold text-slate-950">
+        <h1 className="mt-2 text-4xl text-slate-950 display-title">
           Set or change your password
         </h1>
 

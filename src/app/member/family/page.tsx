@@ -182,7 +182,7 @@ export default async function FamilyPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
 
         <Link
@@ -197,7 +197,7 @@ export default async function FamilyPage() {
             Family
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Your household
           </h1>
 
@@ -228,7 +228,7 @@ export default async function FamilyPage() {
               {guardians.map((guardian) => (
                 <article
                   key={guardian.profileId}
-                  className="rounded-2xl border border-slate-200 bg-white p-5"
+                  className="app-card p-5"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
@@ -274,7 +274,7 @@ export default async function FamilyPage() {
           </h2>
 
           {members.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card mt-4 p-6 text-slate-600">
               No family members have been added yet.
             </div>
           ) : (
@@ -282,7 +282,7 @@ export default async function FamilyPage() {
               {members.map((member) => (
                 <article
                   key={member.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5"
+                  className="app-card p-5"
                 >
                   <p className="font-semibold text-slate-950">
                     {member.first_name}
