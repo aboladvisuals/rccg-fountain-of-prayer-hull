@@ -2,41 +2,38 @@ import s from "./public.module.css";
 
 /**
  * Public developer attribution.
- *
- * Contact is inactive until the owner supplies an approved public number.
- * Set NEXT_PUBLIC_DEVELOPER_PHONE to an international number (e.g. +447700900000)
- * only after explicit approval. Do not invent a number.
+ * Approved public business number for calls and WhatsApp.
+ * Not a church contact.
  */
 
 const DEVELOPER_NAME = "Emmanuel Abolade";
 const DEVELOPER_TITLE = "Software Developer";
-
-function approvedPhone(): string | null {
-  const raw = process.env.NEXT_PUBLIC_DEVELOPER_PHONE?.trim();
-  if (!raw || !raw.startsWith("+") || raw.length < 8) {
-    return null;
-  }
-  return raw;
-}
+const PHONE_DISPLAY = "+44 7876 010071";
+const PHONE_TEL = "+447876010071";
+const WHATSAPP = "https://wa.me/447876010071";
 
 export default function DeveloperCredit() {
-  const phone = approvedPhone();
-  const telHref = phone ? `tel:${phone.replace(/\s+/g, "")}` : null;
-
   return (
     <p className={s.developerCredit}>
       <span>Website designed & developed by </span>
-      {telHref ? (
-        <a href={telHref} className={s.developerCreditLink}>
-          {DEVELOPER_NAME}
-          <span className={s.srOnly}>
-            , {DEVELOPER_TITLE}. Call to discuss websites and software.
-          </span>
-        </a>
-      ) : (
-        <span className={s.developerCreditName}>{DEVELOPER_NAME}</span>
-      )}
+      <span className={s.developerCreditName}>{DEVELOPER_NAME}</span>
       <span className={s.developerCreditTitle}> · {DEVELOPER_TITLE}</span>
+      <span className={s.developerCreditLinks}>
+        <a href={`tel:${PHONE_TEL}`} className={s.developerCreditLink}>
+          Call Developer
+          <span className={s.srOnly}> on {PHONE_DISPLAY}</span>
+        </a>
+        <a
+          href={WHATSAPP}
+          className={s.developerCreditLink}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          WhatsApp Developer
+          <span className={s.srOnly}> at {PHONE_DISPLAY} (opens in a new tab)</span>
+        </a>
+        <span className={s.developerCreditNumber}>{PHONE_DISPLAY}</span>
+      </span>
     </p>
   );
 }
