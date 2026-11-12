@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import Header from "@/components/navigation/Header";
 import BrandLockup from "@/components/brand/BrandLockup";
+import DeveloperCredit from "./DeveloperCredit";
 import s from "./public.module.css";
 
 const DIRECTIONS =
@@ -47,7 +48,7 @@ export default function PublicShell({ children }: { children: ReactNode }) {
           <nav aria-label="You’re welcome here">
             <h2>You’re welcome here</h2>
             <Link href="/plan-your-visit">Plan your visit</Link>
-            <Link href="/contact">Contact &amp; location</Link>
+            <Link href="/contact">Contact & location</Link>
             <Link href="/visit">Visitor check-in</Link>
             <Link href="/login">Member login</Link>
           </nav>
@@ -55,6 +56,7 @@ export default function PublicShell({ children }: { children: ReactNode }) {
         <div className={[s.container, s.footerBottom].join(" ")}>
           <span>RCCG Fountain of Prayer Hull · The Redeemed Christian Church of God</span>
           <span className={s.footerVerse}>Jesus Christ, the same yesterday, today and forever.</span>
+          <DeveloperCredit />
         </div>
       </footer>
     </div>
