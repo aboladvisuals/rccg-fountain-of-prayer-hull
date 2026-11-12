@@ -80,6 +80,7 @@
   position: relative;
 }
 .nav {
+  position: relative; /* offset parent for link positions */
   overflow-x: auto;
   scrollbar-width: none;
   scroll-padding-inline: 2.5rem;
@@ -149,6 +150,10 @@
 .navLink:hover {
   color: var(--color-purple-900);
   background: rgb(87 52 121 / 0.06);
+}
+/* Keep the focus ring inside the scrollable bar so it is never cut off. */
+.navLink:focus-visible {
+  outline-offset: -3px;
 }
 .navLink[aria-current="page"] {
   color: var(--color-purple-900);

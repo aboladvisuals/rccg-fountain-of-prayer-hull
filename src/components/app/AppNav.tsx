@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FocusEvent } from "react";
 import s from "./app.module.css";
 
 export type NavItem = { href: string; label: string; exact?: boolean };
@@ -42,13 +42,25 @@ export default function AppNav({ items, label }: { items: NavItem[]; label: stri
     el.scrollTo({ left: Math.max(0, target), behavior: "auto" });
   }, [pathname]);
 
+  // Browsers don't always scroll a partly visible link fully into view on focus; do it for keyboard users.
+  const revealFocused = (event: FocusEvent<HTMLElement>) => {
+    const el = navRef.current;
+    const link = event.target as HTMLElement;
+    if (!el || el.scrollWidth <= el.clientWidth) return;
+    const pad = 40;
+    const left = link.offsetLeft;
+    const right = left + link.offsetWidth;
+    if (left - pad < el.scrollLeft) el.scrollTo({ left: Math.max(0, left - pad) });
+    else if (right + pad > el.scrollLeft + el.clientWidth) el.scrollTo({ left: right + pad - el.clientWidth });
+  };
+
   return (
     <div
       className={s.navWrap}
       data-overflow-start={edges.start || undefined}
       data-overflow-end={edges.end || undefined}
     >
-      <nav ref={navRef} aria-label={label} className={s.nav}>
+      <nav ref={navRef} aria-label={label} className={s.nav} onFocus={revealFocused}>
         <ul className={s.navList}>
           {items.map((item) => {
             const active = item.exact
