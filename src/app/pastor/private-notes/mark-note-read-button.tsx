@@ -44,7 +44,7 @@ export default function MarkNoteReadButton({
         type="button"
         disabled={pending}
         onClick={handleClick}
-        className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+        className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 btn-primary min-h-11"
       >
         {pending ? "Updating..." : "Mark as read"}
       </button>

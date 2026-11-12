@@ -67,7 +67,7 @@ export default async function PastorVisitorsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-4xl">
 
         <Link
@@ -82,7 +82,7 @@ export default async function PastorVisitorsPage() {
             Welcome ministry
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Visitors today
           </h1>
 
@@ -105,11 +105,11 @@ export default async function PastorVisitorsPage() {
 
         <section className="mt-8">
           {!service ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card p-6 text-slate-600">
               No live service right now.
             </div>
           ) : visitors.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card p-6 text-slate-600">
               No visitors have checked in yet.
             </div>
           ) : (
@@ -125,7 +125,7 @@ export default async function PastorVisitorsPage() {
                 return (
                   <article
                     key={visitor.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-6"
+                    className="app-card p-6"
                   >
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>

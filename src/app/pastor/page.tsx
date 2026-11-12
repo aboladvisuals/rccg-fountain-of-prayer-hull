@@ -1,4 +1,6 @@
 import Link from "next/link";
+import ToolCard from "@/components/app/ToolCard";
+import Icon from "@/components/ui/Icon";
 
 import { localDate } from "@/lib/member/dashboard";
 import { requireStaffSession } from "@/lib/staff/session";
@@ -112,270 +114,103 @@ export default async function PastorDashboardPage() {
     pendingTestimoniesResult.count ?? 0;
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
-      <div className="mx-auto max-w-5xl">
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <Link
-            href="/member"
-            className="text-sm font-semibold text-purple-700"
-          >
-            ← Member dashboard
-          </Link>
-
-          <span className="rounded-full bg-purple-100 px-3 py-1 text-sm font-semibold text-purple-800">
-            {role === "admin"
-              ? "Administrator"
-              : "Pastor"}
-          </span>
-        </header>
-
-        <section className="mt-8 rounded-3xl bg-purple-950 p-7 text-white sm:p-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200">
-            {organisation.name}
-          </p>
-
-          <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
-            Pastor & Admin Dashboard
-          </h1>
-
-          <p className="mt-3 text-purple-100">
-            Live church operations, pastoral care
-            and service management.
-          </p>
+    <main className="app-page">
+      <div className="mx-auto max-w-6xl">
+        <section className="app-hero p-7 sm:p-10">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">
+                {organisation.name}
+              </p>
+              <h1 className="mt-3 text-4xl sm:text-5xl display-title">
+                Pastor &amp; Admin Dashboard
+              </h1>
+              <p className="mt-3 max-w-xl text-purple-100">
+                Live church operations, pastoral care and service management.
+              </p>
+            </div>
+            <span className="chip border-white/15 bg-white/10 text-white">
+              <Icon name="shield" size={16} />
+              {role === "admin" ? "Administrator" : "Pastor"}
+            </span>
+          </div>
         </section>
 
-        <section className="mt-8">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h2 className="text-xl font-bold">
-              Today&apos;s overview
-            </h2>
-
+        <section className="mt-10" aria-labelledby="today-overview">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <p className="kicker">Today</p>
+              <h2 id="today-overview" className="section-title mt-1">
+                Today&apos;s overview
+              </h2>
+            </div>
             {service && (
-              <span className="rounded-full bg-green-50 px-3 py-1 text-sm font-semibold text-green-800">
-                {service.title} · Live
-              </span>
+              <span className="chip chip-live">{service.title} · Live</span>
             )}
           </div>
 
           {!service ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
-              <p className="font-semibold">
-                No live service right now
-              </p>
-
-              <p className="mt-2 text-sm text-slate-500">
-                Start a scheduled service when the
-                congregation is ready.
-              </p>
+            <div className="app-card mt-4 flex items-start gap-4 p-6">
+              <span className="tool-icon shrink-0">
+                <Icon name="calendar" />
+              </span>
+              <div>
+                <p className="font-semibold">No live service right now</p>
+                <p className="mt-1 text-sm text-slate-600">
+                  Start a scheduled service when the congregation is ready.
+                </p>
+                <Link href="/pastor/services" className="btn-secondary mt-4 inline-flex min-h-11 items-center rounded-full border border-slate-300 bg-white px-4 text-sm font-semibold">
+                  Go to services
+                </Link>
+              </div>
             </div>
           ) : (
             <div className="mt-4 grid gap-4 sm:grid-cols-3">
-              <article className="rounded-2xl border border-slate-200 bg-white p-6">
-                <p className="text-sm text-slate-500">
-                  Total present
-                </p>
-
-                <p className="mt-2 text-3xl font-bold">
-                  {totalPresent}
-                </p>
+              <article className="app-card p-6">
+                <p className="text-sm text-slate-600">Total present</p>
+                <p className="stat-value mt-2">{totalPresent}</p>
               </article>
-
-              <article className="rounded-2xl border border-slate-200 bg-white p-6">
-                <p className="text-sm text-slate-500">
-                  Members & family
-                </p>
-
-                <p className="mt-2 text-3xl font-bold text-purple-700">
-                  {membersPresent}
-                </p>
+              <article className="app-card p-6">
+                <p className="text-sm text-slate-600">Members &amp; family</p>
+                <p className="stat-value mt-2 text-purple-700">{membersPresent}</p>
               </article>
-
-              <article className="rounded-2xl border border-slate-200 bg-white p-6">
-                <p className="text-sm text-slate-500">
-                  Visitors
-                </p>
-
-                <p className="mt-2 text-3xl font-bold text-amber-600">
-                  {visitorsPresent}
-                </p>
+              <article className="app-card p-6">
+                <p className="text-sm text-slate-600">Visitors</p>
+                <p className="stat-value mt-2 text-gold-700">{visitorsPresent}</p>
               </article>
             </div>
           )}
         </section>
 
-        <section className="mt-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
-            Church operations
-          </p>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/pastor/services"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Service management
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Church services →
-              </h2>
-            </Link>
-
-            <Link
-              href="/pastor/presence"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Live service
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Live presence →
-              </h2>
-            </Link>
-
-            <Link
-              href="/pastor/visitors"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Welcome ministry
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Visitors today →
-              </h2>
-            </Link>
-
-            <Link
-              href="/media"
-              className="rounded-2xl border border-purple-200 bg-purple-50 p-6 transition hover:border-purple-400"
-            >
-              <p className="text-sm text-purple-700">
-                Auditorium presentation
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold text-purple-950">
-                Media dashboard →
-              </h2>
-            </Link>
+        <section className="mt-12" aria-labelledby="ops">
+          <p className="kicker">Sunday</p>
+          <h2 id="ops" className="section-title mt-1">Church operations</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ToolCard href="/pastor/services" icon="calendar" title="Church services" description="Create, start and end services." />
+            <ToolCard href="/pastor/presence" icon="presence" title="Live presence" description="Who is checked in to the live service." />
+            <ToolCard href="/pastor/visitors" icon="visitor" title="Visitors today" description="Welcome ministry list for today." />
+            <ToolCard href="/media" icon="screen" title="Media dashboard" description="Auditorium presentation controls." tone="accent" />
           </div>
         </section>
 
-        <section className="mt-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
-            Pastoral care
-          </p>
-
+        <section className="mt-12" aria-labelledby="care">
+          <p className="kicker">Shepherding</p>
+          <h2 id="care" className="section-title mt-1">Pastoral care</h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/pastor/private-notes"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm text-slate-500">
-                    Confidential
-                  </p>
-
-                  <h2 className="mt-2 text-lg font-semibold">
-                    Private notes →
-                  </h2>
-                </div>
-
-                {unreadNotes > 0 && (
-                  <span className="rounded-full bg-red-600 px-3 py-1 text-sm font-semibold text-white">
-                    {unreadNotes}
-                  </span>
-                )}
-              </div>
-            </Link>
-
-            <Link
-              href="/pastor/testimonies"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-sm text-slate-500">
-                    Review
-                  </p>
-
-                  <h2 className="mt-2 text-lg font-semibold">
-                    Testimonies →
-                  </h2>
-                </div>
-
-                {pendingTestimonies > 0 && (
-                  <span className="rounded-full bg-amber-500 px-3 py-1 text-sm font-semibold text-white">
-                    {pendingTestimonies}
-                  </span>
-                )}
-              </div>
-            </Link>
+            <ToolCard href="/pastor/private-notes" icon="note" title="Private notes" description="Confidential messages from members." badge={unreadNotes} badgeLabel="unread" note="Confidential" />
+            <ToolCard href="/pastor/testimonies" icon="testimony" title="Testimonies" description="Review testimonies before anything is shared." badge={pendingTestimonies} badgeLabel="awaiting review" />
           </div>
         </section>
 
-        <section className="mt-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
-            Display & communication
-          </p>
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <Link
-              href="/pastor/announcements"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Presentation content
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Announcements →
-              </h2>
-            </Link>
-
-            <Link
-              href="/pastor/display-settings"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Auditorium controls
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Display settings →
-              </h2>
-            </Link>
-
-            <Link
-              href="/display"
-              target="_blank"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
-            >
-              <p className="text-sm text-slate-500">
-                Big screen
-              </p>
-
-              <h2 className="mt-2 text-lg font-semibold">
-                Open auditorium display ↗
-              </h2>
-            </Link>
-
+        <section className="mt-12" aria-labelledby="comms">
+          <p className="kicker">Auditorium</p>
+          <h2 id="comms" className="section-title mt-1">Display &amp; communication</h2>
+          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <ToolCard href="/pastor/announcements" icon="megaphone" title="Announcements" description="Presentation content for the screen." />
+            <ToolCard href="/pastor/display-settings" icon="sliders" title="Display settings" description="What the auditorium screen may show." />
+            <ToolCard href="/display" icon="screen" title="Auditorium display" description="Open the big-screen view." newTab />
             {role === "admin" && (
-              <Link
-                href="/admin/users"
-                className="rounded-2xl border border-slate-300 bg-slate-900 p-6 text-white transition hover:bg-slate-800"
-              >
-                <p className="text-sm text-slate-300">
-                  Administration
-                </p>
-
-                <h2 className="mt-2 text-lg font-semibold">
-                  User & role management →
-                </h2>
-              </Link>
+              <ToolCard href="/admin/users" icon="users" title="Users & roles" description="Administrator-only role management." note="Admin only" />
             )}
           </div>
         </section>

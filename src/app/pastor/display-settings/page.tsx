@@ -41,7 +41,7 @@ export default async function DisplaySettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
 
         <Link
@@ -56,7 +56,7 @@ export default async function DisplaySettingsPage() {
             Auditorium display
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Display settings
           </h1>
 
@@ -78,7 +78,7 @@ export default async function DisplaySettingsPage() {
           <Link
             href="/display"
             target="_blank"
-            className="inline-flex rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm font-semibold text-purple-800"
+            className="inline-flex rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm font-semibold text-purple-800 btn-secondary min-h-11"
           >
             Open auditorium display ↗
           </Link>

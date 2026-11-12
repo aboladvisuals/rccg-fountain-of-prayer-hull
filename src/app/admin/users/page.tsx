@@ -45,7 +45,7 @@ export default async function AdminUsersPage() {
   const memberships = (data ?? []) as unknown as MembershipRow[];
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <Link
@@ -60,12 +60,12 @@ export default async function AdminUsersPage() {
           </span>
         </header>
 
-        <section className="mt-8 rounded-3xl bg-purple-950 p-7 text-white sm:p-10">
+        <section className="app-hero mt-8 p-7 sm:p-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200">
             {organisation.name}
           </p>
 
-          <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
+          <h1 className="mt-3 text-4xl sm:text-5xl display-title">
             User & Role Management
           </h1>
 
@@ -100,7 +100,7 @@ export default async function AdminUsersPage() {
 
           <div className="mt-4 space-y-4">
             {memberships.length === 0 ? (
-              <div className="rounded-2xl border border-slate-200 bg-white p-6">
+              <div className="app-card p-6">
                 <p className="font-semibold">No users found</p>
               </div>
             ) : (
@@ -120,7 +120,7 @@ export default async function AdminUsersPage() {
                 return (
                   <article
                     key={membership.id}
-                    className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6"
+                    className="app-card p-5 sm:p-6"
                   >
                     <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                       <div className="min-w-0">

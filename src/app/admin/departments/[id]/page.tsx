@@ -28,7 +28,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
     .limit(200);
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-6xl">
         <Link
           href="/admin/departments"
@@ -36,13 +36,13 @@ export default async function DepartmentDetailPage({ params }: Props) {
         >
           ← Departments
         </Link>
-        <h1 className="mt-6 text-3xl font-bold">{department.name}</h1>
+        <h1 className="mt-6 text-4xl display-title">{department.name}</h1>
         <p className="mt-2 text-sm text-slate-500">
           {department.is_active ? "Active" : "Inactive"}
           {department.is_child_facing ? " · Child-facing" : ""}
         </p>
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="app-card mt-8 p-6">
           <h2 className="text-lg font-semibold">Assign member</h2>
           <ActionForm action={assignMember} submitLabel="Save assignment" pendingLabel="Saving…" className="mt-4 flex flex-wrap gap-3">
             <input type="hidden" name="departmentId" value={department.id} />
@@ -73,7 +73,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
         <section className="mt-8 space-y-3">
           <h2 className="text-lg font-semibold">Roster</h2>
           {(memberships ?? []).length === 0 ? (
-            <p className="rounded-2xl border border-slate-200 bg-white p-6 text-sm text-slate-600">
+            <p className="app-card p-6 text-sm text-slate-600">
               No members assigned yet.
             </p>
           ) : (
@@ -89,7 +89,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
               return (
                 <article
                   key={row.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-5"
+                  className="app-card p-5"
                 >
                   <p className="font-semibold">{name}</p>
                   <p className="mt-1 text-sm capitalize text-slate-500">
