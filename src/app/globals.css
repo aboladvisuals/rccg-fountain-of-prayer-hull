@@ -415,3 +415,102 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ------------------------------------------------- shared form patterns -- */
+@layer components {
+  .field-label {
+    display: block;
+    margin-bottom: 0.45rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-slate-800);
+  }
+  .field {
+    width: 100%;
+    min-height: 48px;
+    border-radius: 0.875rem;
+    border: 1px solid var(--color-slate-300);
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+  }
+  .field:disabled {
+    background: var(--color-slate-50);
+    color: var(--color-slate-500);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 48px;
+    border-radius: 0.875rem;
+    padding: 0.75rem 1.25rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  .btn-solid {
+    background-color: var(--color-purple-700);
+    color: #fff;
+  }
+  .btn-outline {
+    border: 1px solid var(--color-purple-300);
+    background: #fff;
+    color: var(--color-purple-700);
+  }
+  .notice {
+    border-radius: 0.875rem;
+    padding: 0.85rem 1rem;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    background: var(--color-slate-100);
+    color: var(--color-slate-800);
+    border: 1px solid var(--color-slate-200);
+  }
+  .notice-error {
+    background: #fdf1f1;
+    color: #8f1d1d;
+    border-color: #f3caca;
+  }
+  .notice-success {
+    background: #eff8f2;
+    color: #14532d;
+    border-color: #c7e6d1;
+  }
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-slate-500);
+  }
+  .divider::before,
+  .divider::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: var(--color-slate-200);
+  }
+}
+
+@layer components {
+  .spinner {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 999px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: spin 700ms linear infinite;
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import AuthShell from "@/components/auth/AuthShell";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -60,36 +60,21 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-900">
-      <div className="mx-auto max-w-md">
-        <Link
-          href="/login"
-          className="text-sm font-medium text-purple-700"
-        >
-          ← Back to login
-        </Link>
-
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
-            Account recovery
-          </p>
-
-          <h1 className="mt-2 text-3xl font-bold">Forgot your password?</h1>
-
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Enter your email address and we’ll send you a secure password reset
-            link.
-          </p>
-
+    <AuthShell
+      eyebrow="Account recovery"
+      title="Forgot your password?"
+      intro={<p>Enter your email address and we’ll send you a secure password reset link.</p>}
+      back={{ href: "/login", label: "Back to login" }}
+    >
           <form
             onSubmit={handleSubmit}
-            className="mt-8 space-y-5"
+            className="space-y-5"
             aria-busy={status === "sending"}
           >
             <div>
               <label
                 htmlFor="email"
-                className="mb-2 block text-sm font-medium"
+                className="field-label"
               >
                 Email address
               </label>
@@ -105,14 +90,14 @@ export default function ForgotPasswordPage() {
                 disabled={status === "sending" || status === "sent"}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@example.com"
-                className="w-full rounded-xl border border-slate-300 px-4 py-3 outline-none focus:border-purple-600 disabled:bg-slate-50"
+                className="field"
               />
             </div>
 
             <button
               type="submit"
               disabled={status === "sending" || status === "sent"}
-              className="w-full rounded-xl bg-purple-700 px-4 py-3 font-semibold text-white disabled:opacity-60"
+              className="btn btn-solid btn-primary w-full"
             >
               {status === "sending"
                 ? "Sending..."
@@ -125,13 +110,11 @@ export default function ForgotPasswordPage() {
           {message && (
             <p
               role={status === "error" ? "alert" : "status"}
-              className="mt-5 rounded-xl bg-slate-100 p-4 text-sm text-slate-700"
+              className={`notice mt-5 ${status === "error" ? "notice-error" : "notice-success"}`}
             >
               {message}
             </p>
           )}
-        </div>
-      </div>
-    </main>
+    </AuthShell>
   );
 }
