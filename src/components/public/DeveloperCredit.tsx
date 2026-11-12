@@ -37,9 +37,6 @@ export default function DeveloperCredit() {
         <span className={s.developerCreditName}>{DEVELOPER_NAME}</span>
       )}
       <span className={s.developerCreditTitle}> · {DEVELOPER_TITLE}</span>
-      {!telHref && (
-        <span className={s.developerCreditPending}> Contact details pending approval.</span>
-      )}
     </p>
   );
 }
