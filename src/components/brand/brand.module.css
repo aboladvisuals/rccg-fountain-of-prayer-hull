@@ -1,0 +1,47 @@
+.lockup {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  line-height: 1;
+}
+.mark {
+  flex-shrink: 0;
+  transition: transform 600ms var(--ease-out);
+}
+a:hover > .lockup .mark,
+.lockup:hover .mark {
+  transform: rotate(-8deg) scale(1.04);
+}
+.words {
+  display: grid;
+  gap: 0.32rem;
+}
+.name {
+  font-family: var(--font-display);
+  font-size: 1.28rem;
+  font-weight: 450;
+  letter-spacing: -0.015em;
+  font-variation-settings: "opsz" 40, "SOFT" 60;
+  white-space: nowrap;
+}
+.sub {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+.compact .name {
+  font-size: 1.1rem;
+}
+.dark .name {
+  color: var(--color-purple-950);
+}
+.dark .sub {
+  color: var(--color-gold-700);
+}
+.light .name {
+  color: #fff8ee;
+}
+.light .sub {
+  color: var(--color-gold-300);
+}
