@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdminSession } from "@/lib/admin/session";
 import { getDepartment, listDepartmentMembers } from "@/lib/admin/departments";
+import ActionForm from "@/components/ui/ActionForm";
 import { assignMember } from "../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -43,7 +44,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-lg font-semibold">Assign member</h2>
-          <form action={assignMember} className="mt-4 flex flex-wrap gap-3">
+          <ActionForm action={assignMember} submitLabel="Save assignment" pendingLabel="Saving…" className="mt-4 flex flex-wrap gap-3">
             <input type="hidden" name="departmentId" value={department.id} />
             <select
               name="profileId"
@@ -66,13 +67,7 @@ export default async function DepartmentDetailPage({ params }: Props) {
               <option value="pending">Pending</option>
               <option value="inactive">Inactive</option>
             </select>
-            <button
-              type="submit"
-              className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white"
-            >
-              Save assignment
-            </button>
-          </form>
+          </ActionForm>
         </section>
 
         <section className="mt-8 space-y-3">

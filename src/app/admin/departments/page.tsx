@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin/session";
 import { listDepartments } from "@/lib/admin/departments";
+import ActionForm from "@/components/ui/ActionForm";
 import { createDepartment, setDepartmentActive } from "./actions";
 
 export default async function AdminDepartmentsPage() {
@@ -37,7 +38,7 @@ export default async function AdminDepartmentsPage() {
 
         <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
           <h2 className="text-lg font-semibold">New department</h2>
-          <form action={createDepartment} className="mt-4 grid gap-4 sm:grid-cols-2">
+          <ActionForm action={createDepartment} submitLabel="Create inactive department" pendingLabel="Creating…" resetOnSuccess className="mt-4 grid gap-4 sm:grid-cols-2">
             <label className="block sm:col-span-2">
               <span className="text-sm font-semibold">Name</span>
               <input
@@ -58,13 +59,7 @@ export default async function AdminDepartmentsPage() {
               <input type="checkbox" name="isChildFacing" />
               Child-facing (extra privacy)
             </label>
-            <button
-              type="submit"
-              className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white"
-            >
-              Create inactive department
-            </button>
-          </form>
+          </ActionForm>
         </section>
 
         <section className="mt-8 space-y-4">
@@ -93,20 +88,20 @@ export default async function AdminDepartmentsPage() {
                     >
                       Manage
                     </Link>
-                    <form action={setDepartmentActive}>
+                    <ActionForm
+                      action={setDepartmentActive}
+                      submitLabel={department.is_active ? "Archive" : "Activate"}
+                      pendingLabel="Updating…"
+                      className="flex flex-wrap items-center gap-2"
+                      buttonClassName="btn-secondary min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold disabled:opacity-60"
+                    >
                       <input type="hidden" name="id" value={department.id} />
                       <input
                         type="hidden"
                         name="active"
                         value={department.is_active ? "false" : "true"}
                       />
-                      <button
-                        type="submit"
-                        className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold"
-                      >
-                        {department.is_active ? "Archive" : "Activate"}
-                      </button>
-                    </form>
+                    </ActionForm>
                   </div>
                 </div>
               </article>
