@@ -206,11 +206,11 @@
     /* fine arch line-work, a quiet echo of the parish emblem */
     content: "";
     position: absolute;
-    inset: auto -6% -55% auto;
-    width: min(460px, 70%);
-    aspect-ratio: 1 / 1.15;
+    inset: -60% -8% auto auto;
+    width: min(420px, 60%);
+    aspect-ratio: 1;
     border: 1px solid rgb(230 203 145 / 0.26);
-    border-radius: 999px 999px 0 0;
+    border-radius: 50%;
     outline: 1px solid rgb(230 203 145 / 0.1);
     outline-offset: 22px;
     z-index: -1;
@@ -231,6 +231,10 @@
     font-variation-settings: "opsz" 96, "SOFT" 50;
   }
 
+  .app-card.app-card-accent {
+    border-color: var(--color-purple-200);
+    background: linear-gradient(160deg, var(--color-purple-50), #fff 70%);
+  }
   /* Content card used across dashboards. */
   .app-card {
     position: relative;
@@ -512,5 +516,37 @@
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+@layer components {
+  .tool-icon {
+    display: grid;
+    place-items: center;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.9rem 0.9rem 0.9rem 0.3rem;
+    color: var(--color-purple-800);
+    background:
+      radial-gradient(circle at 30% 20%, rgb(255 255 255 / 0.9), transparent 60%),
+      linear-gradient(135deg, var(--color-purple-100), var(--color-gold-100));
+    box-shadow: inset 0 0 0 1px rgb(87 52 121 / 0.1);
+    transition: transform var(--dur-base) var(--ease-spring);
+  }
+  .group:hover .tool-icon {
+    transform: rotate(-6deg) scale(1.06);
+  }
+  .section-title {
+    font-size: 1.15rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    color: var(--color-slate-900);
+  }
+  .stat-value {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-variation-settings: "opsz" 96;
   }
 }
