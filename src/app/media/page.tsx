@@ -205,7 +205,7 @@ export default async function MediaDashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-6xl">
         <header className="flex flex-wrap items-center justify-between gap-4">
           <Link
@@ -220,12 +220,12 @@ export default async function MediaDashboardPage() {
           </span>
         </header>
 
-        <section className="mt-8 rounded-3xl bg-purple-950 p-7 text-white sm:p-10">
+        <section className="app-hero mt-8 p-7 sm:p-10">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200">
             {organisation.name}
           </p>
 
-          <h1 className="mt-3 text-3xl font-bold sm:text-4xl">
+          <h1 className="mt-3 text-4xl sm:text-5xl display-title">
             Media Dashboard
           </h1>
 
@@ -234,7 +234,7 @@ export default async function MediaDashboardPage() {
           </p>
         </section>
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="app-card mt-8 p-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-sm text-slate-500">
@@ -256,7 +256,7 @@ export default async function MediaDashboardPage() {
             <Link
               href="/display"
               target="_blank"
-              className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm font-semibold text-purple-800"
+              className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm font-semibold text-purple-800 btn-secondary min-h-11"
             >
               Open live display ↗
             </Link>
@@ -267,7 +267,7 @@ export default async function MediaDashboardPage() {
 
         <MediaControls />
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="app-card mt-8 p-6">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
               Live service
@@ -375,7 +375,7 @@ export default async function MediaDashboardPage() {
 
         <BirthdayPanel names={birthdayNames} />
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="app-card mt-8 p-6">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
               Presentation-safe content
@@ -422,7 +422,7 @@ export default async function MediaDashboardPage() {
           )}
         </section>
 
-        <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+        <section className="app-card mt-8 p-6">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
               Presentation-safe content
@@ -471,7 +471,7 @@ export default async function MediaDashboardPage() {
           <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <Link
               href="/pastor/announcements"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+              className="app-card p-6"
             >
               <p className="text-sm text-slate-500">
                 Presentation content
@@ -484,7 +484,7 @@ export default async function MediaDashboardPage() {
 
             <Link
               href="/pastor/display-settings"
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-purple-300"
+              className="app-card p-6"
             >
               <p className="text-sm text-slate-500">
                 Display behaviour
