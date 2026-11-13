@@ -68,6 +68,8 @@ create table public.announcements (id uuid primary key default gen_random_uuid()
 create table public.display_settings (id uuid primary key default gen_random_uuid(), organisation_id uuid not null references public.organisations(id));
 create table public.services (id uuid primary key default gen_random_uuid(), organisation_id uuid not null references public.organisations(id));
 create table public.testimonies (id uuid primary key default gen_random_uuid(), is_approved boolean not null default false, is_public boolean not null default false);
+create table public.family_members (id uuid primary key default gen_random_uuid(), organisation_id uuid not null references public.organisations(id), family_id uuid, first_name text not null, relationship text);
+alter table public.family_members enable row level security;
 create view public.presentation_public_feed as select 1 as placeholder;
 
 create or replace function public.is_org_admin(org uuid) returns boolean
