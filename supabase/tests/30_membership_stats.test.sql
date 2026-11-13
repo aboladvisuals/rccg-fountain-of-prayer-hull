@@ -14,7 +14,10 @@ insert into public.profiles (id, full_name, first_name, email)
 insert into public.organisation_memberships (organisation_id, profile_id, role, status) values
   ('00000000-0000-4000-b000-000000000001', '00000000-0000-4000-a000-0000000000a2', 'pastor', 'active'),
   ('00000000-0000-4000-b000-000000000001', '00000000-0000-4000-a000-0000000000a3', 'member', 'active'),
-  ('00000000-0000-4000-b000-000000000001', '00000000-0000-4000-a000-0000000000a4', 'member', 'inactive');
+  ('00000000-0000-4000-b000-000000000001', '00000000-0000-4000-a000-0000000000a4', 'member', 'inactive')
+-- Since 20261113130000 creating a profile already creates an inactive record
+-- awaiting a role; this upsert is the admin assigning each person's access.
+on conflict (organisation_id, profile_id) do update set role = excluded.role, status = excluded.status, awaiting_role = false;
 insert into public.church_departments (id, organisation_id, name, slug, is_active) values
   ('00000000-0000-4000-c000-000000000004', '00000000-0000-4000-b000-000000000001', 'Ushering and Hospitality', 'ushering-and-hospitality', true);
 insert into public.department_memberships (organisation_id, department_id, profile_id, status) values

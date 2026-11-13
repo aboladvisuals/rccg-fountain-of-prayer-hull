@@ -68,9 +68,13 @@ export async function updateMembershipAccess(formData: FormData) {
       };
     }
 
+    const confirmAwaiting =
+      formData.get("confirmAwaiting") === "true";
+
     if (
       membership.role === role &&
-      membership.status === status
+      membership.status === status &&
+      !confirmAwaiting
     ) {
       return {
         ok: true,
@@ -83,6 +87,8 @@ export async function updateMembershipAccess(formData: FormData) {
       .update({
         role,
         status,
+        // Only sent for new sign-ups, so the column is known to exist.
+        ...(confirmAwaiting ? { awaiting_role: false } : {}),
       })
       .eq("id", membership.id)
       .eq("organisation_id", organisation.id);

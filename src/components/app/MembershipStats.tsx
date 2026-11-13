@@ -6,6 +6,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 type Stats = {
   registered_total: number;
+  awaiting_role_total?: number;
   by_status: Record<string, number>;
   family_members_total: number;
   gender_recorded: boolean;
@@ -40,6 +41,7 @@ export default async function MembershipStats({ supabase, organisationId, compac
   const active = s.by_status?.active ?? 0;
   const inactive = s.by_status?.inactive ?? 0;
   const other = s.registered_total - active - inactive;
+  const awaiting = s.awaiting_role_total ?? 0;
   const departments = (s.departments ?? []).filter((d) => d.is_active);
 
   return (
@@ -52,7 +54,7 @@ export default async function MembershipStats({ supabase, organisationId, compac
         <span className="chip">Live from member records · not Sunday attendance</span>
       </div>
       <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Registered members" value={s.registered_total} note="Each person counted once. Visitors are not included." />
+        <Stat label="Registered members" value={s.registered_total} note={awaiting > 0 ? `Each person counted once. Visitors and ${awaiting} new sign-up${awaiting === 1 ? "" : "s"} awaiting a role are not included.` : "Each person counted once. Visitors are not included."} />
         <Stat label="Active · Inactive" value={`${active} · ${inactive}`} note={other > 0 ? `${other} with another status (e.g. pending)` : "From membership status"} tone="plum" />
         <Stat label="Men · Women" value="Not recorded" note="Gender is not stored in member profiles yet." tone="muted" />
         <Stat label="Children · Adults" value="Not recorded" note={`Date of birth is not stored. ${s.family_members_total} family members recorded by households.`} tone="muted" />

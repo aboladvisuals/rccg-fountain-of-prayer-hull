@@ -115,6 +115,7 @@ export default async function DepartmentWorkspace({ supabase, userId, department
   const active = membership?.status === "active";
   const can = departmentAbilities({ leadershipRole: role, isActiveMember: active, isChildFacing: department.is_child_facing });
   const activityWord = variant === "choir" ? "rehearsal" : "activity";
+  const activityWithArticle = `${activityWord === "activity" ? "an" : "a"} ${activityWord}`;
 
   const events = active ? await loadUpcomingEvents(supabase, [department.id], { includeCancelled: true, limit: 30 }) : [];
   const ids = events.map((e) => e.id);
@@ -291,7 +292,7 @@ export default async function DepartmentWorkspace({ supabase, userId, department
         {can.manageEvents && (
           <section className="app-card app-card-accent p-6" aria-labelledby="new-activity">
             <p className="kicker">Plan</p>
-            <h2 id="new-activity" className="section-title mt-1">Schedule a {activityWord}</h2>
+            <h2 id="new-activity" className="section-title mt-1">Schedule {activityWithArticle}</h2>
             <p className="mt-1 text-sm text-slate-500">Enter UK time. Members of this department are able to respond.</p>
             <ActionForm action={createDepartmentEvent} submitLabel={`Schedule ${activityWord}`} pendingLabel="Scheduling…" resetOnSuccess className="mt-4 grid gap-3 sm:grid-cols-2">
               <input type="hidden" name="departmentId" value={department.id} />
