@@ -55,7 +55,7 @@ export default async function ServicesPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-4xl">
 
         <Link
@@ -70,7 +70,7 @@ export default async function ServicesPage() {
             Service management
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Church services
           </h1>
 
@@ -89,7 +89,7 @@ export default async function ServicesPage() {
           </h2>
 
           {services.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card mt-4 p-6 text-slate-600">
               No services have been created for today.
             </div>
           ) : (
@@ -97,7 +97,7 @@ export default async function ServicesPage() {
               {services.map((service) => (
                 <article
                   key={service.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-6"
+                  className="app-card p-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>

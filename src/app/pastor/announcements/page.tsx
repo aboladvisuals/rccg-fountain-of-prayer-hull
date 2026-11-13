@@ -20,7 +20,7 @@ export default async function PastorAnnouncementsPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-4xl">
         <Link
           href="/media"
@@ -34,7 +34,7 @@ export default async function PastorAnnouncementsPage() {
             Display management
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Announcements
           </h1>
 
@@ -57,7 +57,7 @@ export default async function PastorAnnouncementsPage() {
               Announcements could not be loaded.
             </div>
           ) : !announcements || announcements.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card mt-4 p-6 text-slate-600">
               No announcements yet.
             </div>
           ) : (
@@ -65,7 +65,7 @@ export default async function PastorAnnouncementsPage() {
               {announcements.map((announcement) => (
                 <article
                   key={announcement.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-6"
+                  className="app-card p-6"
                 >
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>

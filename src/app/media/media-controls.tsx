@@ -18,13 +18,13 @@ export default function MediaControls() {
           action={showWelcomeAction}
           label="Show Welcome"
           hint="Manual presentation"
-          className="w-full rounded-2xl bg-purple-700 p-6 text-left text-white transition hover:bg-purple-800"
+          className="w-full rounded-2xl bg-purple-700 p-6 text-left text-white transition hover:bg-purple-800 btn-primary"
         />
         <MediaStatusButton
           action={resumeAutomaticAction}
           label="Resume automatic rotation"
           hint="Display mode"
-          className="w-full rounded-2xl border border-slate-200 bg-white p-6 text-left transition hover:border-purple-300"
+          className="app-card w-full p-6 text-left transition hover:border-purple-300"
         />
         <MediaStatusButton
           action={clearDisplayAction}
@@ -34,7 +34,7 @@ export default function MediaControls() {
         />
       </section>
 
-      <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-6">
+      <section className="app-card mt-4 p-6">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
@@ -54,7 +54,7 @@ export default function MediaControls() {
             <MediaStatusButton
               action={nextSlideAction}
               label="Next →"
-              className="w-full rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white"
+              className="w-full rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white btn-primary"
             />
           </div>
         </div>
@@ -64,9 +64,9 @@ export default function MediaControls() {
         <FormActionButton
           action={showVerseAction}
           label="Show verse on screen"
-          className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white"
+          className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white btn-primary"
         >
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="app-card p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
               Bible presentation
             </p>
@@ -99,9 +99,9 @@ export default function MediaControls() {
         <FormActionButton
           action={showLyricsAction}
           label="Show lyrics on screen"
-          className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white"
+          className="mt-5 rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white btn-primary"
         >
-          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="app-card p-6">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
               Worship presentation
             </p>

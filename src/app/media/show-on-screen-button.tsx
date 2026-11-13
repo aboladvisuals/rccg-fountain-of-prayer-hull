@@ -48,7 +48,7 @@ export default function ShowOnScreenButton({
         type="button"
         disabled={pending}
         onClick={show}
-        className="rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="rounded-xl bg-purple-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-60 btn-primary min-h-11"
       >
         {pending ? "Sending..." : "Show on Screen"}
       </button>

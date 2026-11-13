@@ -60,7 +60,7 @@ export default function TestimonyControls({
             type="button"
             disabled={pending}
             onClick={approve}
-            className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
+            className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-60 btn-primary min-h-11"
           >
             {pending ? "Updating..." : "Approve testimony"}
           </button>

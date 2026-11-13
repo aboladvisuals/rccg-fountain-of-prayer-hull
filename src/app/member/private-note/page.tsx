@@ -12,7 +12,7 @@ export default async function PrivateNotePage() {
     .order("created_at", { ascending: false });
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-3xl">
 
         <Link
@@ -27,7 +27,7 @@ export default async function PrivateNotePage() {
             Pastoral care
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Private note
           </h1>
 
@@ -46,7 +46,7 @@ export default async function PrivateNotePage() {
           </h2>
 
           {!notes || notes.length === 0 ? (
-            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card mt-4 p-6 text-slate-600">
               You have not sent any private notes yet.
             </div>
           ) : (
@@ -54,7 +54,7 @@ export default async function PrivateNotePage() {
               {notes.map((note) => (
                 <article
                   key={note.id}
-                  className="rounded-2xl border border-slate-200 bg-white p-6"
+                  className="app-card p-6"
                 >
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <span
