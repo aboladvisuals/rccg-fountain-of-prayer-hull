@@ -37,7 +37,7 @@ test('department_leadership policies never read department_memberships (no recur
 test('leadership_select allows only org admins and the record owner', () => {
   const { body } = finalPolicies('department_leadership').get('leadership_select');
   assert.match(body, /is_org_admin\(organisation_id\)/);
-  assert.match(body, /profile_id\s*=\s*auth\.uid\(\)/);
+  assert.match(body, /profile_id\s*=\s*(?:\(\s*select\s+)?auth\.uid\(\)(?:\s*\))?/i);
   assert.doesNotMatch(body, /\btrue\b/);
 });
 
