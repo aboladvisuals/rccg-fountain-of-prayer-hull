@@ -2,7 +2,9 @@ import Link from "next/link";
 import ToolCard from "@/components/app/ToolCard";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import { requireMemberSession } from "@/lib/member/session";
-import { hasStaffAccess, loadDashboard } from "@/lib/member/dashboard";
+import { hasStaffAccess, loadDashboard, localDate } from "@/lib/member/dashboard";
+import { loadJoinableDepartments, loadMyLeadership, loadMyMemberships, loadUpcomingEvents } from "@/lib/departments/workspace";
+import LondonCalendar from "@/components/app/LondonCalendar";
 import PresenceControls from "./presence-controls";
 import MyDepartments from "./my-departments";
 
@@ -23,6 +25,19 @@ export default async function MemberPage() {
   const name = profile?.first_name?.trim() || profile?.full_name?.trim();
   const active = membership?.status === "active";
   const role = active ? ({ member: "Member", pastor: "Pastor", admin: "Administrator", media: "Media team" }[membership.role]) : "Access pending";
+  const [{ rows: departmentRows }, leadership] = await Promise.all([
+    loadMyMemberships(supabase, user.id),
+    loadMyLeadership(supabase, user.id),
+  ]);
+  const activeDepartments = departmentRows.filter((row) => row.status === "active" && row.department);
+  const { data: church } = await supabase.from("organisations").select("id").eq("slug", "rccg-fountain-of-prayer-hull").eq("is_active", true).maybeSingle();
+  const orgId = church?.id as string | undefined;
+  const [upcoming, joinable] = await Promise.all([
+    active ? loadUpcomingEvents(supabase, activeDepartments.map((row) => row.department!.id), { limit: 60 }) : Promise.resolve([]),
+    active && orgId ? loadJoinableDepartments(supabase, orgId) : Promise.resolve([]),
+  ]);
+  const departmentNames = new Map(activeDepartments.map((row) => [row.department!.id, row.department!.name]));
+  const calendarEvents = upcoming.map((event) => ({ id: event.id, title: event.title, startsAt: event.starts_at, status: event.status, departmentName: departmentNames.get(event.department_id) }));
   const time = (value: string) =>
     new Intl.DateTimeFormat("en-GB", { timeZone: dashboard.timezone, hour: "2-digit", minute: "2-digit" }).format(new Date(value));
 
@@ -94,7 +109,11 @@ export default async function MemberPage() {
           </section>
 
           <div className="lg:col-span-5">
-            <MyDepartments supabase={supabase} profileId={user.id} />
+            <LondonCalendar initialToday={localDate(new Date(), "Europe/London")} events={calendarEvents} />
+
+            <div className="mt-6">
+              <MyDepartments memberships={departmentRows} leadership={leadership} joinable={joinable} />
+            </div>
 
             {hasStaffAccess(membership) && (
               <section className="app-hero mt-6 p-6">

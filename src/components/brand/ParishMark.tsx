@@ -3,17 +3,19 @@
  *
  * An original decorative mark (sanctuary arch, rising light, fountain ripples).
  * It is NOT the official RCCG logo. No authorised RCCG logo file exists in this
- * repository yet; when the church supplies one, add it under /public/brand and
- * render it here instead (see docs/design-system.md, "Logo").
+ * repository yet; install it through src/lib/brand/official-logo.ts and the
+ * shared BrandEmblem component will use it everywhere instead of this mark.
  */
 export default function ParishMark({
   size = 40,
   className,
   tone = "gold",
+  ...rest
 }: {
   size?: number;
   className?: string;
   tone?: "gold" | "plum" | "light";
+  "data-brand"?: string;
 }) {
   const stroke =
     tone === "plum" ? "#573479" : tone === "light" ? "#fff8ee" : "#d9b36a";
@@ -26,6 +28,7 @@ export default function ParishMark({
       aria-hidden="true"
       focusable="false"
       className={className}
+      data-brand={rest["data-brand"] ?? "placeholder-emblem-not-official-rccg-logo"}
     >
       <circle cx="24" cy="24" r="23" stroke={stroke} strokeOpacity="0.55" />
       <path

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import BrandLockup from "@/components/brand/BrandLockup";
-import ParishMark from "@/components/brand/ParishMark";
+import BrandEmblem from "@/components/brand/BrandEmblem";
 import s from "./auth.module.css";
 
 /**
@@ -33,7 +33,7 @@ export default function AuthShell({
           </div>
         </div>
         <div className={s.artCopy}>
-          <ParishMark size={44} tone="gold" />
+          <BrandEmblem size={44} surface="dark" />
           <p className={s.artTitle}>
             Fountain of Prayer <span>Hull</span>
           </p>

@@ -45,3 +45,21 @@ a:hover > .lockup .mark,
 .light .sub {
   color: var(--color-gold-300);
 }
+/* Official logo plate: keeps the authorised artwork's own colours legible on any surface. */
+.logoPlate {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.logoPlateDark {
+  background: #fff8ee;
+  box-shadow: 0 0 0 1px rgb(217 179 106 / 0.45), 0 6px 14px -8px rgb(0 0 0 / 0.6);
+  padding: 8%;
+}
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

@@ -14,7 +14,9 @@ Because `purple-*` and `slate-*` are remapped, existing utility markup inherits 
 
 ## Components
 - Public: `Header` (glass, mobile sheet), `Hero` + `HeroMotion` (pointer tilt, pause toggle), `PublicShell`, `PageIntro`.
-- Brand: `ParishMark` / `BrandLockup` — an ORIGINAL placeholder emblem, **not** the official RCCG logo.
+- Brand: `BrandEmblem` (used by `BrandLockup`, `AuthShell`, `Hero`) renders the official RCCG logo once installed,
+  otherwise `ParishMark` — an ORIGINAL placeholder emblem, **not** the official RCCG logo.
+- Dashboard calendar: `LondonCalendar` (`src/components/app`) with pure date maths in `src/lib/calendar/london.ts`.
 - Auth: `AuthShell` (split cinematic panel + card).
 - Signed-in: `AppFrame` + `AppNav` (`navigation.ts`), `ToolCard`, `Icon`, `ActionForm`.
 - Utility classes: `.app-page`, `.app-hero`, `.app-card`, `.btn-primary`, `.btn-secondary`, `.kicker`,
@@ -25,8 +27,16 @@ All decorative motion is CSS, disabled by `prefers-reduced-motion: reduce`, and 
 visible pause control. Content is visible without animation support.
 
 ## Official logo slot
-Place an authorised RCCG logo file in `public/brand/` and swap it into `BrandLockup`. Do not trace or
-recreate the logo.
+No authorised RCCG logo exists in the repository (all branches checked 13 Nov 2026). To install it:
+
+1. Save the church-supplied file exactly as `public/brand/rccg-logo.svg` (preferred) or
+   `public/brand/rccg-logo.png` (transparent, at least 512 × 512 px).
+2. Set `OFFICIAL_RCCG_LOGO` in `src/lib/brand/official-logo.ts` to `{ src, width, height }` using the
+   file's real pixel size (prevents stretching).
+3. Run `node --test tests/*.test.cjs` — `tests/brand-logo.test.cjs` fails if the file and setting disagree.
+
+`BrandEmblem` then shows it in the header, footer, sign-in and hero. On dark surfaces it sits on a light
+plate so the artwork's own colours are never altered. Do not trace, redraw, recolour or download a substitute.
 
 ## Photography
 No congregation photography is used. Art direction is CSS-only until the church supplies consented photos.
