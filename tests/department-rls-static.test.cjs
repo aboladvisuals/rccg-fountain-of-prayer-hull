@@ -62,3 +62,15 @@ test('no global application roles are added', () => {
   assert.doesNotMatch(all, /alter\s+type\s+public\.app_role/i);
   assert.doesNotMatch(all, /choir_admin|department_admin|department_manager/i);
 });
+
+test('membership statistics functions are aggregate-only, access-checked and not callable by anon', () => {
+  const file = sql.find((s) => /membership_statistics/.test(s.f));
+  assert.ok(file, 'missing membership statistics migration');
+  const t = file.text;
+  assert.match(t, /church_membership_stats[\s\S]*security definer set search_path = public/);
+  assert.match(t, /is_org_pastor_or_admin\(org\)/);
+  assert.match(t, /raise exception 'Not authorised/);
+  assert.match(t, /revoke all on function public\.church_membership_stats\(uuid\) from public, anon/);
+  assert.doesNotMatch(t, /create table/i, 'no stored totals');
+  for (const pii of ['email', 'full_name', 'first_name', 'phone']) assert.doesNotMatch(t, new RegExp(`\\b${pii}\\b`), `exposes ${pii}`);
+});

@@ -5,6 +5,7 @@ import Icon from "@/components/ui/Icon";
 import { localDate } from "@/lib/member/dashboard";
 import { requireStaffSession } from "@/lib/staff/session";
 import LondonCalendar from "@/components/app/LondonCalendar";
+import MembershipStats from "@/components/app/MembershipStats";
 
 export default async function PastorDashboardPage() {
   const { supabase, organisation, role } =
@@ -187,6 +188,8 @@ export default async function PastorDashboardPage() {
           <LondonCalendar initialToday={localDate(new Date(), "Europe/London")} />
         </div>
         </div>
+
+        <MembershipStats supabase={supabase} organisationId={organisation.id} />
 
         <section className="mt-12" aria-labelledby="ops">
           <p className="kicker">Sunday</p>
