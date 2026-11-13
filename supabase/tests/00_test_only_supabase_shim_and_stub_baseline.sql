@@ -27,7 +27,7 @@ create table if not exists auth.users (id uuid primary key, email text);
 create or replace function auth.uid() returns uuid language sql stable as $$
   select nullif(coalesce(
     current_setting('request.jwt.claim.sub', true),
-    current_setting('request.jwt.claims', true)::jsonb ->> 'sub'
+    nullif(current_setting('request.jwt.claims', true), '')::jsonb ->> 'sub'
   ), '')::uuid
 $$;
 grant usage on schema auth to anon, authenticated;
@@ -39,7 +39,9 @@ create publication supabase_realtime;
 
 -- 2. Stub baseline (assumed shapes) ------------------------------------------
 create type public.app_role as enum ('admin', 'pastor', 'media', 'member');
-create type public.membership_status as enum ('pending', 'active', 'inactive');
+-- Production's membership_status has exactly two values (confirmed read-only on
+-- 13 Nov 2026: the Data API rejects 'pending' as an invalid enum input).
+create type public.membership_status as enum ('active', 'inactive');
 
 create table public.organisations (
   id uuid primary key default gen_random_uuid(),
@@ -60,7 +62,7 @@ create table public.organisation_memberships (
   organisation_id uuid not null references public.organisations(id) on delete cascade,
   profile_id uuid not null references public.profiles(id) on delete cascade,
   role public.app_role not null default 'member',
-  status public.membership_status not null default 'pending',
+  status public.membership_status not null,
   created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
   unique (organisation_id, profile_id)
 );

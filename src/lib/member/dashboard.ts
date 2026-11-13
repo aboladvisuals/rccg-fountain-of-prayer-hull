@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export type Profile = { full_name: string | null; first_name: string | null; show_name_on_display: boolean; show_family_on_display: boolean };
-export type Membership = { role: "member" | "pastor" | "admin" | "media"; status: "active" | "inactive" };
+export type Membership = { role: "member" | "pastor" | "admin" | "media"; status: "active" | "inactive"; awaiting_role?: boolean };
 export type Service = { id: string; title: string; starts_at: string | null };
 export type Attendance = { checked_in_at: string; is_serving: boolean };
 export type Dashboard = {
@@ -17,6 +17,23 @@ export type Dashboard = {
 
 export function hasStaffAccess(membership: Membership | null): boolean {
   return membership?.status === "active" && ["pastor", "admin"].includes(membership.role);
+}
+
+/** Roles that may open /media (the same rule requireMediaSession enforces). */
+export const MEDIA_ROLES: readonly Membership["role"][] = ["media", "pastor", "admin"];
+
+export function hasMediaAccess(membership: Pick<Membership, "role" | "status"> | null | undefined): boolean {
+  return membership?.status === "active" && MEDIA_ROLES.includes(membership.role);
+}
+
+/** A self sign-up the church admin has not yet given a role (20261113130000). */
+export function isAwaitingRole(membership: Membership | null | undefined): boolean {
+  return membership?.status !== "active" && membership?.awaiting_role === true;
+}
+
+/** The awaiting_role column is missing until 20261113130000 is applied. */
+export function isMissingColumnError(error: { code?: string } | null | undefined): boolean {
+  return error?.code === "42703" || error?.code === "PGRST204";
 }
 
 export function localDate(now: Date, timezone: string): string {
@@ -38,12 +55,16 @@ export async function loadDashboard(supabase: SupabaseClient, userId: string, no
   }
   const org = organisation.data;
   result.organisationName = org.name;
-  const [membership, location] = await Promise.all([
-    supabase.from("organisation_memberships").select("role, status").eq("organisation_id", org.id).eq("profile_id", userId).maybeSingle(),
+  const readMembership = (columns: string) =>
+    supabase.from("organisation_memberships").select(columns).eq("organisation_id", org.id).eq("profile_id", userId).maybeSingle();
+  const [firstMembership, location] = await Promise.all([
+    readMembership("role, status, awaiting_role"),
     supabase.from("church_locations").select("id, name, timezone").eq("organisation_id", org.id).eq("slug", "hull").eq("is_active", true).maybeSingle(),
   ]);
+  // Before the sign-up migration is applied the column does not exist yet.
+  const membership = isMissingColumnError(firstMembership.error) ? await readMembership("role, status") : firstMembership;
   if (membership.error) result.issues.push("Your membership could not be verified. Please refresh to try again.");
-  else result.membership = membership.data;
+  else result.membership = membership.data as Membership | null;
   if (location.error || !location.data) {
     result.issues.push("Hull service details are temporarily unavailable.");
     return result;

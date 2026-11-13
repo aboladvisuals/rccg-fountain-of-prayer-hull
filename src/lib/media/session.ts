@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { requireMemberSession } from "@/lib/member/session";
+import { hasMediaAccess } from "@/lib/member/dashboard";
 
 export async function requireMediaSession() {
   const { supabase, user } = await requireMemberSession();
@@ -22,10 +23,7 @@ export async function requireMediaSession() {
     .eq("profile_id", user.id)
     .maybeSingle();
 
-  if (
-    membership?.status !== "active" ||
-    !["media", "pastor", "admin"].includes(membership.role)
-  ) {
+  if (!membership || !hasMediaAccess(membership)) {
     redirect("/member");
   }
 

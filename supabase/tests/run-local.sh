@@ -14,4 +14,5 @@ $P -d "$DB" -f "$HERE/10_fictional_seed.sql"
 $P -d "$DB" -f "$HERE/20_department_rls.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
 $P -d "$DB" -f "$HERE/30_membership_stats.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
 $P -d "$DB" -f "$HERE/40_data_api_grants.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
+$P -d "$DB" -f "$HERE/50_signup_membership.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
 echo "ALL DEPARTMENT RLS TESTS PASSED"

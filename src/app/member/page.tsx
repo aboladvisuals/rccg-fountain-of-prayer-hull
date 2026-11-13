@@ -2,7 +2,7 @@ import Link from "next/link";
 import ToolCard from "@/components/app/ToolCard";
 import Icon, { type IconName } from "@/components/ui/Icon";
 import { requireMemberSession } from "@/lib/member/session";
-import { hasStaffAccess, loadDashboard, localDate } from "@/lib/member/dashboard";
+import { hasMediaAccess, hasStaffAccess, isAwaitingRole, loadDashboard, localDate } from "@/lib/member/dashboard";
 import { loadJoinableDepartments, loadMyLeadership, loadMyMemberships, loadUpcomingEvents } from "@/lib/departments/workspace";
 import LondonCalendar from "@/components/app/LondonCalendar";
 import { departmentsAvailability } from "@/lib/departments/availability";
@@ -25,7 +25,8 @@ export default async function MemberPage() {
   const { profile, membership, issues } = dashboard;
   const name = profile?.first_name?.trim() || profile?.full_name?.trim();
   const active = membership?.status === "active";
-  const role = active ? ({ member: "Member", pastor: "Pastor", admin: "Administrator", media: "Media team" }[membership.role]) : "Access pending";
+  const awaiting = isAwaitingRole(membership);
+  const role = active ? ({ member: "Member", pastor: "Pastor", admin: "Administrator", media: "Media team" }[membership.role]) : awaiting ? "Awaiting a role" : "Access pending";
   const [{ rows: departmentRows, error: departmentError }, leadership] = await Promise.all([
     loadMyMemberships(supabase, user.id),
     loadMyLeadership(supabase, user.id),
@@ -69,8 +70,13 @@ export default async function MemberPage() {
         </div>}
 
         {!active && !issues.some((issue) => /membership|Church details/.test(issue)) && <section className="app-card mt-6 border-purple-200 bg-purple-50 p-6">
-          <h2 className="section-title">{membership?.status === "inactive" ? "Your membership is inactive" : "Your account is ready; member access is pending"}</h2>
-          <p className="mt-2 text-sm leading-6 text-slate-700">You are signed in securely. Please ask the church team to {membership ? "reactivate" : "link"} your membership at Fountain of Prayer Hull.</p>
+          {awaiting ? <>
+            <h2 className="section-title">Thanks for signing up. Your account is waiting for a role</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-700">You are signed in securely. The church admin can see your sign-up and will assign your role at Fountain of Prayer Hull. Once your role is assigned, department leaders can add you to your departments.</p>
+          </> : <>
+            <h2 className="section-title">{membership?.status === "inactive" ? "Your membership is inactive" : "Your account is ready; member access is pending"}</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-700">You are signed in securely. Please ask the church team to {membership ? "reactivate" : "link"} your membership at Fountain of Prayer Hull.</p>
+          </>}
         </section>}
 
         <div className="mt-8 grid gap-6 lg:grid-cols-12">
@@ -125,6 +131,19 @@ export default async function MemberPage() {
                   className="btn mt-5 bg-white text-purple-900 hover:bg-gold-100"
                 >
                   Open Pastor &amp; Admin Dashboard <Icon name="arrow" size={18} />
+                </Link>
+              </section>
+            )}
+
+            {hasMediaAccess(membership) && !hasStaffAccess(membership) && (
+              <section className="app-hero mt-6 p-6" aria-labelledby="media-access">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gold-300">Media team</p>
+                <h2 id="media-access" className="display-title mt-2 text-2xl">Run the auditorium screen.</h2>
+                <Link
+                  href="/media"
+                  className="btn mt-5 bg-white text-purple-900 hover:bg-gold-100"
+                >
+                  Open Media dashboard <Icon name="arrow" size={18} />
                 </Link>
               </section>
             )}

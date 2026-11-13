@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireAdminSession } from "@/lib/admin/session";
 import UserAccessForm from "./user-access-form";
+import { isMissingColumnError } from "@/lib/member/dashboard";
 
 type ProfileRow = {
   id: string;
@@ -13,36 +14,46 @@ type MembershipRow = {
   id: string;
   role: "member" | "pastor" | "admin" | "media";
   status: "active" | "inactive";
+  awaiting_role?: boolean;
   profile: ProfileRow | ProfileRow[] | null;
 };
 
-export default async function AdminUsersPage() {
+const PROFILE_COLUMNS = "profile:profiles (id, full_name, first_name, email)";
+
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ show?: string }>;
+}) {
   const { supabase, organisation, user } =
     await requireAdminSession();
+  const showAwaitingOnly = (await searchParams).show === "awaiting";
 
-  const { data, error } = await supabase
-    .from("organisation_memberships")
-    .select(
-      `
-        id,
-        role,
-        status,
-        profile:profiles (
-          id,
-          full_name,
-          first_name,
-          email
-        )
-      `
-    )
-    .eq("organisation_id", organisation.id)
-    .order("created_at", { ascending: true });
+  const load = (columns: string) =>
+    supabase
+      .from("organisation_memberships")
+      .select(`${columns}, ${PROFILE_COLUMNS}`)
+      .eq("organisation_id", organisation.id)
+      .order("created_at", { ascending: true });
+
+  let result = await load("id, role, status, awaiting_role");
+  // Before the sign-up migration is applied the column does not exist yet.
+  if (isMissingColumnError(result.error)) {
+    result = await load("id, role, status");
+  }
+  const { data, error } = result;
 
   if (error) {
     throw new Error("Unable to load organisation users.");
   }
 
-  const memberships = (data ?? []) as unknown as MembershipRow[];
+  const all = (data ?? []) as unknown as MembershipRow[];
+  const awaitingCount = all.filter((m) => m.awaiting_role === true).length;
+  // New sign-ups awaiting a role are listed first so the admin sees them straight away.
+  const memberships = [
+    ...all.filter((m) => m.awaiting_role === true),
+    ...(showAwaitingOnly ? [] : all.filter((m) => m.awaiting_role !== true)),
+  ];
 
   return (
     <main className="app-page">
@@ -88,8 +99,8 @@ export default async function AdminUsersPage() {
               <h2 className="text-xl font-bold">Organisation users</h2>
 
               <p className="mt-1 text-sm text-slate-500">
-                {memberships.length} user
-                {memberships.length === 1 ? "" : "s"}
+                {all.length} user
+                {all.length === 1 ? "" : "s"}
               </p>
             </div>
 
@@ -97,6 +108,23 @@ export default async function AdminUsersPage() {
               Changes are audit logged
             </div>
           </div>
+
+          {(awaitingCount > 0 || showAwaitingOnly) && (
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
+              <p>
+                <strong>
+                  {awaitingCount} new sign-up{awaitingCount === 1 ? "" : "s"} awaiting a role.
+                </strong>{" "}
+                Choose a role and status, then save. They have no member access until you do.
+              </p>
+              <Link
+                href={showAwaitingOnly ? "/admin/users" : "/admin/users?show=awaiting"}
+                className="inline-flex min-h-11 items-center font-semibold text-amber-900 underline underline-offset-4"
+              >
+                {showAwaitingOnly ? "Show everyone" : "Show only new sign-ups"}
+              </Link>
+            </div>
+          )}
 
           <div className="mt-4 space-y-4">
             {memberships.length === 0 ? (
@@ -147,6 +175,12 @@ export default async function AdminUsersPage() {
                             {membership.role}
                           </span>
 
+                          {membership.awaiting_role === true && (
+                            <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-900">
+                              New sign-up · awaiting a role
+                            </span>
+                          )}
+
                           <span
                             className={
                               membership.status === "active"
@@ -166,6 +200,7 @@ export default async function AdminUsersPage() {
                           initialStatus={membership.status}
                           userName={name}
                           isCurrentUser={isCurrentUser}
+                          awaitingRole={membership.awaiting_role === true}
                         />
                       </div>
                     </div>

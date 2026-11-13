@@ -12,12 +12,14 @@ export default function UserAccessForm({
   initialStatus,
   userName,
   isCurrentUser,
+  awaitingRole = false,
 }: {
   membershipId: string;
   initialRole: Role;
   initialStatus: Status;
   userName: string;
   isCurrentUser: boolean;
+  awaitingRole?: boolean;
 }) {
   const [role, setRole] = useState<Role>(initialRole);
   const [status, setStatus] = useState<Status>(initialStatus);
@@ -25,8 +27,9 @@ export default function UserAccessForm({
   const [messageType, setMessageType] = useState<"success" | "error" | "">("");
   const [isPending, startTransition] = useTransition();
 
+  // A new sign-up can be confirmed as it is (for example kept as an inactive member).
   const hasChanges =
-    role !== initialRole || status !== initialStatus;
+    role !== initialRole || status !== initialStatus || awaitingRole;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -45,6 +48,9 @@ export default function UserAccessForm({
     const details = [
       roleChanged ? `role: ${initialRole} → ${role}` : null,
       statusChanged ? `status: ${initialStatus} → ${status}` : null,
+      awaitingRole && !roleChanged && !statusChanged
+        ? `confirm new sign-up as: ${role}, ${status}`
+        : null,
     ]
       .filter(Boolean)
       .join(", ");
@@ -59,6 +65,7 @@ export default function UserAccessForm({
     formData.set("membershipId", membershipId);
     formData.set("role", role);
     formData.set("status", status);
+    if (awaitingRole) formData.set("confirmAwaiting", "true");
 
     startTransition(async () => {
       const result = await updateMembershipAccess(formData);
