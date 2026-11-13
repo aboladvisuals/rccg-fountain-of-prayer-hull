@@ -4,6 +4,7 @@ import Icon from "@/components/ui/Icon";
 
 import { localDate } from "@/lib/member/dashboard";
 import { requireStaffSession } from "@/lib/staff/session";
+import LondonCalendar from "@/components/app/LondonCalendar";
 
 export default async function PastorDashboardPage() {
   const { supabase, organisation, role } =
@@ -136,7 +137,8 @@ export default async function PastorDashboardPage() {
           </div>
         </section>
 
-        <section className="mt-10" aria-labelledby="today-overview">
+        <div className="mt-10 grid gap-6 lg:grid-cols-12">
+        <section className="lg:col-span-7" aria-labelledby="today-overview">
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <p className="kicker">Today</p>
@@ -181,6 +183,10 @@ export default async function PastorDashboardPage() {
             </div>
           )}
         </section>
+        <div className="lg:col-span-5">
+          <LondonCalendar initialToday={localDate(new Date(), "Europe/London")} />
+        </div>
+        </div>
 
         <section className="mt-12" aria-labelledby="ops">
           <p className="kicker">Sunday</p>
@@ -211,6 +217,9 @@ export default async function PastorDashboardPage() {
             <ToolCard href="/display" icon="screen" title="Auditorium display" description="Open the big-screen view." newTab />
             {role === "admin" && (
               <ToolCard href="/admin/users" icon="users" title="Users & roles" description="Administrator-only role management." note="Admin only" />
+            )}
+            {role === "admin" && (
+              <ToolCard href="/admin/departments" icon="department" title="Departments" description="Leaders, deputies, members and join requests." note="Admin only" />
             )}
           </div>
         </section>
