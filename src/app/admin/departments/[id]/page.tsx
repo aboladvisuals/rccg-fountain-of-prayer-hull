@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { requireAdminSession } from "@/lib/admin/session";
 import { getDepartment, listDepartmentAudit, listDepartmentLeadership, listDepartmentMembers } from "@/lib/admin/departments";
 import ActionForm from "@/components/ui/ActionForm";
+import DepartmentsNotice from "@/components/app/DepartmentsNotice";
+import { departmentsAvailability } from "@/lib/departments/availability";
 import { appointLeadership, assignMember, removeLeadership, setJoinRequests } from "../actions";
 
 type Props = { params: Promise<{ id: string }> };
@@ -29,7 +31,19 @@ function describeAction(action: string, oldStatus: string | null, newStatus: str
 export default async function DepartmentDetailPage({ params }: Props) {
   const { id } = await params;
   const { supabase, organisation } = await requireAdminSession();
-  const { data: department } = await getDepartment(supabase, organisation.id, id);
+  const { data: department, error: departmentError } = await getDepartment(supabase, organisation.id, id);
+  if (departmentError) {
+    console.error("[admin/departments/[id]] getDepartment failed", { code: departmentError.code, message: departmentError.message });
+    return (
+      <main className="app-page">
+        <div className="mx-auto max-w-3xl">
+          <Link href="/admin/departments" className="text-sm font-semibold text-purple-700">← Departments</Link>
+          <h1 className="display-title mt-6 text-3xl">Department</h1>
+          <DepartmentsNotice state={departmentsAvailability(departmentError)} className="mt-6" />
+        </div>
+      </main>
+    );
+  }
   if (!department) notFound();
 
   const [{ data: memberships }, { data: profiles }, { data: leadership }, { data: audit }] = await Promise.all([

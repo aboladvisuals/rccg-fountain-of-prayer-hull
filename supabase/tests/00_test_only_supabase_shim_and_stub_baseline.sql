@@ -105,3 +105,10 @@ alter table public.services enable row level security;
 alter table public.testimonies enable row level security;
 alter table public.organisations enable row level security;
 create policy orgs_read on public.organisations for select to anon, authenticated using (true);
+
+-- 3. Emulate Supabase's 30 Oct 2026 Data API change ----------------------------
+-- The stub baseline above predates the change and keeps its default grants (as
+-- in production). Every table created by the repository migrations from here on
+-- gets NO automatic grants to anon/authenticated/service_role, exactly like the
+-- hosted project, so missing GRANTs fail in this lab instead of in production.
+alter default privileges in schema public revoke all on tables from anon, authenticated, service_role;

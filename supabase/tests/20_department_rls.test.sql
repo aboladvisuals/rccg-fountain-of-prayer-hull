@@ -275,12 +275,12 @@ end $$;
 -- UNAUTHENTICATED VISITOR -----------------------------------------------------------------
 do $$ begin
   perform tests.anon();
-  perform tests.ok(tests.n('select 1 from public.church_departments') = 0
-    and tests.n('select 1 from public.department_memberships') = 0
-    and tests.n('select 1 from public.department_leadership') = 0
-    and tests.n('select 1 from public.department_events') = 0
-    and tests.n('select 1 from public.department_event_rsvps') = 0
-    and tests.n('select 1 from public.department_assignment_audit') = 0, 'anon reads no department data');
+  perform tests.throws($q$select 1 from public.church_departments$q$, 'permission denied', 'anon cannot read church_departments (no Data API grant)');
+  perform tests.throws($q$select 1 from public.department_memberships$q$, 'permission denied', 'anon cannot read department_memberships (no Data API grant)');
+  perform tests.throws($q$select 1 from public.department_leadership$q$, 'permission denied', 'anon cannot read department_leadership (no Data API grant)');
+  perform tests.throws($q$select 1 from public.department_events$q$, 'permission denied', 'anon cannot read department_events (no Data API grant)');
+  perform tests.throws($q$select 1 from public.department_event_rsvps$q$, 'permission denied', 'anon cannot read department_event_rsvps (no Data API grant)');
+  perform tests.throws($q$select 1 from public.department_assignment_audit$q$, 'permission denied', 'anon cannot read department_assignment_audit (no Data API grant)');
   perform tests.throws($q$select * from public.department_roster('00000000-0000-4000-c000-000000000001')$q$, 'permission denied', 'anon cannot call roster function');
   perform tests.throws($q$insert into public.department_memberships (organisation_id, department_id, profile_id, status) values
     ('00000000-0000-4000-b000-000000000001','00000000-0000-4000-c000-000000000001','00000000-0000-4000-a000-0000000000e1','active')$q$,
