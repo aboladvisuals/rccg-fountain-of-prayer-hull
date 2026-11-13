@@ -13,4 +13,5 @@ for f in "$HERE"/../migrations/*.sql; do $P -d "$DB" -f "$f" 2>&1 | grep -v NOTI
 $P -d "$DB" -f "$HERE/10_fictional_seed.sql"
 $P -d "$DB" -f "$HERE/20_department_rls.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
 $P -d "$DB" -f "$HERE/30_membership_stats.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
+$P -d "$DB" -f "$HERE/40_data_api_grants.test.sql" 2>&1 | sed 's/^psql:[^ ]* //'
 echo "ALL DEPARTMENT RLS TESTS PASSED"

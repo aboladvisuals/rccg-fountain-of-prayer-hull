@@ -5,6 +5,7 @@ import { requireMemberSession } from "@/lib/member/session";
 import { hasStaffAccess, loadDashboard, localDate } from "@/lib/member/dashboard";
 import { loadJoinableDepartments, loadMyLeadership, loadMyMemberships, loadUpcomingEvents } from "@/lib/departments/workspace";
 import LondonCalendar from "@/components/app/LondonCalendar";
+import { departmentsAvailability } from "@/lib/departments/availability";
 import PresenceControls from "./presence-controls";
 import MyDepartments from "./my-departments";
 
@@ -25,7 +26,7 @@ export default async function MemberPage() {
   const name = profile?.first_name?.trim() || profile?.full_name?.trim();
   const active = membership?.status === "active";
   const role = active ? ({ member: "Member", pastor: "Pastor", admin: "Administrator", media: "Media team" }[membership.role]) : "Access pending";
-  const [{ rows: departmentRows }, leadership] = await Promise.all([
+  const [{ rows: departmentRows, error: departmentError }, leadership] = await Promise.all([
     loadMyMemberships(supabase, user.id),
     loadMyLeadership(supabase, user.id),
   ]);
@@ -112,7 +113,7 @@ export default async function MemberPage() {
             <LondonCalendar initialToday={localDate(new Date(), "Europe/London")} events={calendarEvents} />
 
             <div className="mt-6">
-              <MyDepartments memberships={departmentRows} leadership={leadership} joinable={joinable} />
+              <MyDepartments memberships={departmentRows} leadership={leadership} joinable={joinable} availability={departmentsAvailability(departmentError)} />
             </div>
 
             {hasStaffAccess(membership) && (

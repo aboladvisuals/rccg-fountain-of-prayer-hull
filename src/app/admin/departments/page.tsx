@@ -3,14 +3,17 @@ import { requireAdminSession } from "@/lib/admin/session";
 import { listDepartments } from "@/lib/admin/departments";
 import ActionForm from "@/components/ui/ActionForm";
 import { createDepartment, setDepartmentActive } from "./actions";
+import DepartmentsNotice from "@/components/app/DepartmentsNotice";
+import { departmentsAvailability } from "@/lib/departments/availability";
 
 export default async function AdminDepartmentsPage() {
   const { supabase, organisation } = await requireAdminSession();
   const { data, error } = await listDepartments(supabase, organisation.id);
 
-  if (error) {
-    throw new Error("Unable to load departments.");
-  }
+  // Never crash the page on a query error (e.g. a missing GRANT or migration);
+  // log it for the server logs and show a calm notice instead.
+  const availability = departmentsAvailability(error);
+  if (error) console.error("[admin/departments] listDepartments failed", { code: error.code, message: error.message });
 
   const departments = data ?? [];
 
@@ -36,6 +39,10 @@ export default async function AdminDepartmentsPage() {
           </p>
         </section>
 
+        {availability !== "ok" ? (
+          <DepartmentsNotice state={availability} className="mt-8" />
+        ) : (
+        <>
         <section className="app-card mt-8 p-6">
           <h2 className="text-lg font-semibold">New department</h2>
           <ActionForm action={createDepartment} submitLabel="Create inactive department" pendingLabel="Creating…" resetOnSuccess className="mt-4 grid gap-4 sm:grid-cols-2">
@@ -108,6 +115,8 @@ export default async function AdminDepartmentsPage() {
             ))
           )}
         </section>
+        </>
+        )}
       </div>
     </main>
   );

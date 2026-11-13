@@ -3,17 +3,20 @@ import Icon from "@/components/ui/Icon";
 import ActionForm from "@/components/ui/ActionForm";
 import type { DepartmentSummary, MyMembership } from "@/lib/departments/workspace";
 import type { LeadershipRole } from "@/lib/departments/permissions";
+import type { DepartmentsAvailability } from "@/lib/departments/availability";
+import DepartmentsNotice from "@/components/app/DepartmentsNotice";
 import { requestToJoin, respondToMembership } from "./departments/actions";
 
 type Props = {
   memberships: MyMembership[];
   leadership: Map<string, LeadershipRole>;
   joinable: DepartmentSummary[];
+  availability?: DepartmentsAvailability;
 };
 
 const smallBtn = "btn-secondary min-h-11 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold disabled:opacity-60";
 
-export default function MyDepartments({ memberships, leadership, joinable }: Props) {
+export default function MyDepartments({ memberships, leadership, joinable, availability = "ok" }: Props) {
   const invitations = memberships.filter((m) => m.status === "pending" && m.origin === "leader_invite" && m.department);
   const rows = memberships.filter((m) => m.department && m.status !== "inactive" && !invitations.includes(m));
   const mine = new Set(memberships.filter((m) => m.status !== "inactive").map((m) => m.department?.id));
@@ -23,6 +26,7 @@ export default function MyDepartments({ memberships, leadership, joinable }: Pro
     <section aria-labelledby="my-departments">
       <p className="kicker">Serving</p>
       <h2 id="my-departments" className="section-title mt-1">My Departments</h2>
+      <DepartmentsNotice state={availability} className="mt-4" />
 
       {invitations.length > 0 && (
         <ul className="mt-4 space-y-3" aria-label="Department invitations">

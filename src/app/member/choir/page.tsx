@@ -2,12 +2,26 @@ import Link from "next/link";
 import { requireMemberSession } from "@/lib/member/session";
 import { loadMyMemberships } from "@/lib/departments/workspace";
 import DepartmentWorkspace from "../departments/workspace";
+import DepartmentsNotice from "@/components/app/DepartmentsNotice";
+import { departmentsAvailability } from "@/lib/departments/availability";
 
 const CHOIR_SLUG = "choir-and-worship";
 
 export default async function ChoirPage() {
   const { supabase, user } = await requireMemberSession();
-  const { rows } = await loadMyMemberships(supabase, user.id);
+  const { rows, error } = await loadMyMemberships(supabase, user.id);
+  const availability = departmentsAvailability(error);
+  if (availability !== "ok") {
+    return (
+      <main className="app-page">
+        <div className="mx-auto max-w-3xl">
+          <Link href="/member" className="text-sm font-semibold text-purple-700">← Member dashboard</Link>
+          <h1 className="display-title mt-6 text-3xl">Choir</h1>
+          <DepartmentsNotice state={availability} className="mt-6" />
+        </div>
+      </main>
+    );
+  }
   const choir = rows.find((row) => row.department?.slug === CHOIR_SLUG && row.status !== "inactive");
 
   if (!choir?.department || choir.status !== "active") {
