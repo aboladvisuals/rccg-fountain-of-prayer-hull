@@ -34,7 +34,7 @@ export default function AnnouncementForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-slate-200 bg-white p-6"
+      className="app-card p-6"
     >
       <h2 className="text-lg font-semibold">
         Create announcement
@@ -80,7 +80,7 @@ export default function AnnouncementForm() {
       <button
         type="submit"
         disabled={pending}
-        className="mt-5 w-full rounded-xl bg-purple-700 px-4 py-3 font-semibold text-white disabled:opacity-60"
+        className="mt-5 w-full rounded-xl bg-purple-700 px-4 py-3 font-semibold text-white disabled:opacity-60 btn-primary min-h-11"
       >
         {pending ? "Creating..." : "Publish announcement"}
       </button>

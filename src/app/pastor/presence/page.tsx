@@ -102,7 +102,7 @@ export default async function LivePresencePage() {
     attendance.length + visitors.length;
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-5xl">
 
         <Link
@@ -117,7 +117,7 @@ export default async function LivePresencePage() {
             Live service
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Live presence
           </h1>
 
@@ -127,14 +127,14 @@ export default async function LivePresencePage() {
         </section>
 
         {!service ? (
-          <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+          <section className="app-card mt-8 p-6">
             <p className="font-semibold">
               No live service right now.
             </p>
           </section>
         ) : (
           <>
-            <section className="mt-8 rounded-3xl bg-purple-950 p-7 text-white">
+            <section className="app-hero mt-8 p-7">
               <p className="text-sm text-purple-200">
                 {service.title}
               </p>
@@ -154,7 +154,7 @@ export default async function LivePresencePage() {
               </h2>
 
               {attendance.length === 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+                <div className="app-card mt-4 p-6 text-slate-600">
                   No members checked in yet.
                 </div>
               ) : (
@@ -162,7 +162,7 @@ export default async function LivePresencePage() {
                   {attendance.map((person) => (
                     <article
                       key={person.id}
-                      className="rounded-2xl border border-slate-200 bg-white p-5"
+                      className="app-card p-5"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
@@ -214,7 +214,7 @@ export default async function LivePresencePage() {
               </h2>
 
               {visitors.length === 0 ? (
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+                <div className="app-card mt-4 p-6 text-slate-600">
                   No visitors checked in yet.
                 </div>
               ) : (
@@ -233,7 +233,7 @@ export default async function LivePresencePage() {
                     return (
                       <article
                         key={visitor.id}
-                        className="rounded-2xl border border-slate-200 bg-white p-5"
+                        className="app-card p-5"
                       >
                         <p className="font-semibold">
                           {name}

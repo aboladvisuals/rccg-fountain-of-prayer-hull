@@ -14,23 +14,18 @@ export function PageIntro({
 }) {
   return (
     <section className={s.pageIntro}>
+      <div className={s.introSky} aria-hidden="true">
+        <span />
+      </div>
       <div className={s.container}>
-        <Link
-          className={s.breadcrumb}
-          href="/"
-        >
-          Home /
-        </Link>
-
-        <p className={s.eyebrow}>
-          {label}
-        </p>
-
-        <h1>{title}</h1>
-
-        <div className={s.introCopy}>
-          {children}
-        </div>
+        <nav aria-label="Breadcrumb" className={[s.breadcrumb, s.enter1].join(" ")}>
+          <Link href="/">Home</Link>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">{label.toLowerCase()}</span>
+        </nav>
+        <p className={[s.eyebrow, s.enter1].join(" ")}>{label}</p>
+        <h1 className={s.enter2}>{title}</h1>
+        <div className={[s.introCopy, s.enter3].join(" ")}>{children}</div>
       </div>
     </section>
   );
@@ -39,39 +34,24 @@ export function PageIntro({
 export function ServiceCards() {
   return (
     <div className={s.twoGrid}>
-      <article className={s.serviceCard}>
-        <span className={s.cardNumber}>
-          01 / GATHER
-        </span>
-
+      <article className={[s.serviceCard, s.reveal].join(" ")}>
+        <span className={s.cardNumber}>01 / Gather</span>
         <h3>Sunday worship</h3>
-
         <p>
-          Make room for worship, prayer, the Word of God
-          and fellowship together.
+          Make room for worship, prayer, the Word of God and fellowship
+          together.
         </p>
-
-        <div className={s.cardMeta}>
-          Every Sunday · 9:30 AM–12:00 PM
-        </div>
+        <div className={s.cardMeta}>Every Sunday · 9:30 AM–12:00 PM</div>
       </article>
 
-      <article className={s.serviceCard}>
-        <span className={s.cardNumber}>
-          02 / WELCOME
-        </span>
-
+      <article className={[s.serviceCard, s.reveal].join(" ")}>
+        <span className={s.cardNumber}>02 / Welcome</span>
         <h3>Your first Sunday</h3>
-
         <p>
-          Visiting for the first time? Come as you are,
-          settle in and experience the service at your own
-          pace.
+          Visiting for the first time? Come as you are, settle in and
+          experience the service at your own pace.
         </p>
-
-        <div className={s.cardMeta}>
-          152–154 Hessle Road · Hull · HU3 2AD
-        </div>
+        <div className={s.cardMeta}>152–154 Hessle Road · Hull · HU3 2AD</div>
       </article>
     </div>
   );
@@ -80,31 +60,15 @@ export function ServiceCards() {
 export function VisitCallout() {
   return (
     <section className={s.visitCallout}>
-      <div
-        className={[
-          s.container,
-          s.calloutInner,
-        ].join(" ")}
-      >
+      <div className={s.calloutLight} aria-hidden="true" />
+      <div className={[s.container, s.calloutInner, s.reveal].join(" ")}>
         <div>
-          <p className={s.eyebrow}>
-            THERE’S A PLACE FOR YOU
-          </p>
-
+          <p className={s.eyebrow}>There’s a place for you</p>
           <h2>Come as you are.</h2>
-
-          <p>
-            We look forward to welcoming you to Fountain
-            of Prayer Hull.
-          </p>
+          <p>We look forward to welcoming you to Fountain of Prayer Hull.</p>
         </div>
-
-        <Link
-          href="/plan-your-visit"
-          className={s.buttonLight}
-        >
-          Plan your visit{" "}
-          <span aria-hidden="true">↗</span>
+        <Link href="/plan-your-visit" className={s.buttonLight}>
+          Plan your visit <span aria-hidden="true">→</span>
         </Link>
       </div>
     </section>
@@ -113,29 +77,18 @@ export function VisitCallout() {
 
 export function EventEmpty() {
   return (
-    <div className={s.eventEmpty}>
-      <span
-        className={s.eventIcon}
-        aria-hidden="true"
-      >
+    <div className={[s.eventEmpty, s.reveal].join(" ")}>
+      <span className={s.eventIcon} aria-hidden="true">
         ✦
       </span>
-
       <div>
-        <h3>
-          Good things to look forward to.
-        </h3>
-
+        <h3>Good things to look forward to.</h3>
         <p>
-          Our Hull events calendar is being prepared.
-          Confirmed dates and gathering details will
-          appear here.
+          Our Hull events calendar is being prepared. Confirmed dates and
+          gathering details will appear here.
         </p>
       </div>
-
-      <span className={s.pill}>
-        Coming soon
-      </span>
+      <span className={s.pill}>Coming soon</span>
     </div>
   );
 }

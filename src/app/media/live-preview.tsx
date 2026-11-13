@@ -30,7 +30,7 @@ export default function LivePreview() {
   }
 
   return (
-    <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+    <section className="app-card mt-8 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
@@ -58,7 +58,7 @@ export default function LivePreview() {
           <button
             type="button"
             onClick={enterPreviewFullscreen}
-            className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-800 transition hover:border-purple-300"
+            className="rounded-xl border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-semibold text-purple-800 transition hover:border-purple-300 btn-secondary min-h-11"
           >
             Fullscreen preview
           </button>
@@ -66,7 +66,7 @@ export default function LivePreview() {
           <button
             type="button"
             onClick={openDedicatedDisplay}
-            className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800"
+            className="rounded-xl bg-purple-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-purple-800 btn-primary min-h-11"
           >
             Open dedicated display
           </button>

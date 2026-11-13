@@ -43,7 +43,7 @@ export default async function PastorPrivateNotesPage() {
   );
 
   return (
-    <main className="min-h-screen bg-slate-50 px-5 py-8 text-slate-900 sm:px-8 sm:py-12">
+    <main className="app-page">
       <div className="mx-auto max-w-4xl">
 
         <Link
@@ -58,7 +58,7 @@ export default async function PastorPrivateNotesPage() {
             Pastoral care
           </p>
 
-          <h1 className="mt-2 text-3xl font-bold">
+          <h1 className="mt-2 text-4xl display-title">
             Private notes
           </h1>
 
@@ -73,7 +73,7 @@ export default async function PastorPrivateNotesPage() {
               Private notes could not be loaded.
             </div>
           ) : !notes || notes.length === 0 ? (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-600">
+            <div className="app-card p-6 text-slate-600">
               No private notes have been submitted.
             </div>
           ) : (

@@ -133,7 +133,7 @@ export default function UserAccessForm({
       <button
         type="submit"
         disabled={isPending || !hasChanges}
-        className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-xl bg-purple-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50 btn-primary min-h-11"
       >
         {isPending ? "Updating..." : "Save access changes"}
       </button>

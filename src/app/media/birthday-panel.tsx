@@ -6,7 +6,7 @@ type Props = {
 
 export default function BirthdayPanel({ names }: Props) {
   return (
-    <section className="mt-8 rounded-2xl border border-slate-200 bg-white p-6">
+    <section className="app-card mt-8 p-6">
       <div>
         <p className="text-sm font-semibold uppercase tracking-[0.18em] text-purple-700">
           Presentation-safe content

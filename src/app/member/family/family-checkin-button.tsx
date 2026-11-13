@@ -49,7 +49,7 @@ export default function FamilyCheckInButton({
         type="button"
         disabled={pending}
         onClick={handleCheckIn}
-        className="rounded-xl bg-purple-700 px-4 py-2.5 font-semibold text-white disabled:opacity-60"
+        className="rounded-xl bg-purple-700 px-4 py-2.5 font-semibold text-white disabled:opacity-60 btn-primary min-h-11"
       >
         {pending ? "Checking in..." : `Check in ${firstName}`}
       </button>
