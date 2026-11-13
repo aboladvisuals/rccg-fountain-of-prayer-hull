@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ParishMark from "@/components/brand/ParishMark";
+import BrandEmblem from "@/components/brand/BrandEmblem";
 import s from "@/components/public/public.module.css";
 import { MotionToggle, TiltStage } from "./HeroMotion";
 
@@ -89,7 +89,7 @@ export default function Hero() {
                 </span>
               </div>
               <div className={[s.floatCard, s.floatBadge].join(" ")}>
-                <ParishMark size={30} tone="gold" />
+                <BrandEmblem size={30} surface="dark" />
                 <span>
                   <strong>Faith · Prayer · Community</strong>
                   Hull, United Kingdom
