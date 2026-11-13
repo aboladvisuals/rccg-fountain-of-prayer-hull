@@ -131,3 +131,23 @@ restoring the old policy reintroduces the infinite recursion. Roll back only
 together with the whole Departments feature (drop the department tables
 created in `20261110150000`), or replace the policy with an even stricter one
 (`using (public.is_org_admin(organisation_id))`).
+
+## Membership statistics (`20261113110000_membership_statistics.sql`)
+
+Additive, read-only, aggregate-only. Rollback:
+`drop function if exists public.church_membership_stats(uuid); drop function if exists public.department_membership_stats(uuid);`
+
+* Registered members: `organisation_memberships` rows (unique per person). Visitors excluded.
+* Active/inactive: `organisation_memberships.status`.
+* Family members: `family_members` count, reported separately (not added to the registered total).
+* Men/women, children/adults: **not recorded** — the schema has no sex/gender, full date of birth
+  (only `birth_month`/`birth_day`) or child flag. Nothing is inferred from names or relationships.
+* Department totals: distinct people with an active department membership (overlapping).
+* Access: org admin/pastor; active leader/deputy of `ushering-and-hospitality` (aggregates only);
+  department totals for that department's own leader/deputy.
+
+### Deferred minimum schema change (needs owner consent decision)
+`alter table public.profiles add column sex text check (sex in ('male','female')), add column date_of_birth date;`
+and the same two optional columns on `public.family_members`, both nullable, collected only with
+consent and editable by the member/guardian. Children = age under 18 on the current Europe/London
+date; missing values stay "Unspecified"/"Age unknown".

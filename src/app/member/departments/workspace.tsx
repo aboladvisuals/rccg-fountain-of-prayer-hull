@@ -17,6 +17,7 @@ import {
   type DepartmentSummary,
 } from "@/lib/departments/workspace";
 import { isoDate, zonedParts } from "@/lib/calendar/london";
+import MembershipStats from "@/components/app/MembershipStats";
 import {
   cancelDepartmentEvent,
   createDepartmentEvent,
@@ -123,6 +124,9 @@ export default async function DepartmentWorkspace({ supabase, userId, department
     can.viewRoster ? loadRoster(supabase, department.id) : Promise.resolve([]),
     can.manageMembers ? loadInviteCandidates(supabase, department.id) : Promise.resolve([]),
   ]);
+  const deptStats = role
+    ? ((await supabase.rpc("department_membership_stats", { p_department: department.id })).data as { active_members: number; pending_members: number; upcoming_events: number }[] | null)?.[0] ?? null
+    : null;
   const names = new Map(roster.map((r) => [r.profile_id, r.display_name]));
   const next = nextActivity(events, new Date());
   const pendingRequests = roster.filter((r) => r.status === "pending" && r.origin === "member_request");
@@ -253,6 +257,11 @@ export default async function DepartmentWorkspace({ supabase, userId, department
         )}
       </div>
 
+      {role && department.slug === "ushering-and-hospitality" && (
+        <div className="order-first lg:col-span-12 [&>section]:mt-0">
+          <MembershipStats supabase={supabase} organisationId={department.organisation_id} compact />
+        </div>
+      )}
       <aside className="space-y-6 lg:col-span-5">
         <section className="app-card p-6">
           <p className="kicker">Your role</p>
@@ -270,6 +279,14 @@ export default async function DepartmentWorkspace({ supabase, userId, department
             </ActionForm>
           )}
         </section>
+
+        {deptStats && (
+          <section className="app-card p-6" aria-labelledby="dept-stats">
+            <p className="kicker">Department total</p>
+            <h2 id="dept-stats" className="section-title mt-1">{deptStats.active_members} active {deptStats.active_members === 1 ? "member" : "members"}</h2>
+            <p className="mt-1 text-sm text-slate-600">{deptStats.pending_members} pending · {deptStats.upcoming_events} upcoming {deptStats.upcoming_events === 1 ? "activity" : "activities"}. Calculated live from department records.</p>
+          </section>
+        )}
 
         {can.manageEvents && (
           <section className="app-card app-card-accent p-6" aria-labelledby="new-activity">
